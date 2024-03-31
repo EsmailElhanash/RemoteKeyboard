@@ -13,7 +13,7 @@
         android:theme="@style/Theme.RemoteKeyboard"
         tools:targetApi="31">
         <activity
-            android:name=".ui.AllKeyboardLayoutsActivity"
+            android:name=".ui.layoutsactivity.AllKeyboardLayoutsActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.RemoteKeyboard">
