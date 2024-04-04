@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.esmailelhanash.remotekeyboard.model.KeyboardLayout
+import com.esmailelhanash.remotekeyboard.data.model.KeyboardLayout
 
 @Composable
 fun KeyboardLayoutsGrid(keyboardLayouts: List<KeyboardLayout>) {
