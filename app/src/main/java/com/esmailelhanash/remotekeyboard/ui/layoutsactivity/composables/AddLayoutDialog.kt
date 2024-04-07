@@ -1,5 +1,6 @@
 package com.esmailelhanash.remotekeyboard.ui.layoutsactivity.composables
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,7 +34,12 @@ import androidx.compose.ui.window.DialogProperties
 import com.esmailelhanash.remotekeyboard.data.database.DatabaseClient
 import com.esmailelhanash.remotekeyboard.data.model.KeyboardLayout
 import com.esmailelhanash.remotekeyboard.ui.theme.RemoteKeyboardTheme
-
+import androidx.compose.runtime.LaunchedEffect
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
 
 // fun for the dialog, with a callback parameter to set the showDialog state
@@ -88,16 +94,40 @@ fun AddLayoutDialog(
                         Spacer(modifier = Modifier.width(8.dp))
                         Button(
                             onClick = {
-                                DatabaseClient.getDatabase(context)
-                                    .keyboardLayoutDao()
-                                    .insertLayout(
-                                        KeyboardLayout(
-                                            name = textState.text,
-                                            keyboardButtons = listOf(),
-                                            background = null
-                                        )
-                                    )
-                                updateDialogVisibilityState(false)
+                                 /** make a CoroutineScope launch that should inform the user after success or failure of
+                                 the insert keyboard layout request result with a Toast */
+
+
+
+                                CoroutineScope(
+                                    Dispatchers.IO
+                                ).launch {
+                                        val result = DatabaseClient.getDatabase(context)
+                                            .keyboardLayoutDao()
+                                            .insertLayout(
+                                                KeyboardLayout(
+                                                    name = textState.text,
+                                                    keyboardButtons = listOf(),
+                                                    background = null
+                                                )
+                                            )
+//                                        todo inform the user about the result of the insert keyboard layout request
+//                                        if (result) {
+//                                            // show toast success
+//                                            LaunchedEffect(Unit) {
+//                                                Toast.makeText(context, "Keyboard layout added", Toast.LENGTH_SHORT).show()
+//                                            }
+//
+//                                        }else{
+//                                            //  show toast failure:
+//                                            LaunchedEffect(Unit) {
+//                                                Toast.makeText(context, "", Toast.LENGTH_SHORT).show()
+//                                            }
+//
+//                                        }
+                                        updateDialogVisibilityState(false)
+                                    }
+
                             },
                         ) {
                             Text("Confirm", color = Color.White)

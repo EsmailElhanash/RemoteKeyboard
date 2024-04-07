@@ -5,7 +5,7 @@ import androidx.room.Room
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 object DatabaseClient {
-
+    private const val DBNAME = "keyboard-layouts-database"
     @Volatile
     private var INSTANCE: AppDatabase? = null
 
@@ -18,7 +18,7 @@ object DatabaseClient {
             val instance = Room.databaseBuilder(
                 context.applicationContext,
                 AppDatabase::class.java,
-                "database-name"
+                DBNAME
             )
                 .fallbackToDestructiveMigration()
                 .build()

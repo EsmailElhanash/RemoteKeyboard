@@ -13,6 +13,10 @@ import com.esmailelhanash.remotekeyboard.ui.layoutsactivity.composables.Root
 import com.esmailelhanash.remotekeyboard.ui.theme.RemoteKeyboardTheme
 
 class AllKeyboardLayoutsActivity : ComponentActivity() {
+
+    // the view model
+    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
