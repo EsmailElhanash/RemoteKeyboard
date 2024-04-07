@@ -24,11 +24,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.esmailelhanash.remotekeyboard.data.database.DatabaseClient
+import com.esmailelhanash.remotekeyboard.data.model.KeyboardLayout
 import com.esmailelhanash.remotekeyboard.ui.theme.RemoteKeyboardTheme
 
 
@@ -38,6 +41,7 @@ import com.esmailelhanash.remotekeyboard.ui.theme.RemoteKeyboardTheme
 fun AddLayoutDialog(
     updateDialogVisibilityState: (Boolean) -> Unit
 ) {
+    val context = LocalContext.current
     Dialog(
         onDismissRequest = { updateDialogVisibilityState(false) },
         properties = DialogProperties(usePlatformDefaultWidth = true,),
@@ -84,8 +88,16 @@ fun AddLayoutDialog(
                         Spacer(modifier = Modifier.width(8.dp))
                         Button(
                             onClick = {
-//                                onConfirm()
-//                                updateDialogVisibilityState(false)
+                                DatabaseClient.getDatabase(context)
+                                    .keyboardLayoutDao()
+                                    .insertLayout(
+                                        KeyboardLayout(
+                                            name = textState.text,
+                                            keyboardButtons = listOf(),
+                                            background = null
+                                        )
+                                    )
+                                updateDialogVisibilityState(false)
                             },
                         ) {
                             Text("Confirm", color = Color.White)

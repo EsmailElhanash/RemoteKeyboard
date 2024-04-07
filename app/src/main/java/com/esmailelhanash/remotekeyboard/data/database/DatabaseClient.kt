@@ -2,16 +2,17 @@ package com.esmailelhanash.remotekeyboard.data.database
 
 import android.content.Context
 import androidx.room.Room
-
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 object DatabaseClient {
 
     @Volatile
     private var INSTANCE: AppDatabase? = null
 
-    fun getDatabase(context: Context): AppDatabase {
+    suspend fun getDatabase(context: Context): AppDatabase = withContext(Dispatchers.IO) {
         val tempInstance = INSTANCE
         if (tempInstance != null) {
-            return tempInstance
+            return@withContext tempInstance
         }
         synchronized(this) {
             val instance = Room.databaseBuilder(
@@ -22,7 +23,7 @@ object DatabaseClient {
                 .fallbackToDestructiveMigration()
                 .build()
             INSTANCE = instance
-            return instance
+            return@withContext instance
         }
     }
 }
