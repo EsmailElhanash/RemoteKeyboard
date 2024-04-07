@@ -3,6 +3,7 @@ package com.esmailelhanash.remotekeyboard.data.model
 data class KeyboardButton(
     val id: Int,
     val name: String,
+    val keystroke : String,
     val icon: String,
     val x: Int,
     val y: Int,
