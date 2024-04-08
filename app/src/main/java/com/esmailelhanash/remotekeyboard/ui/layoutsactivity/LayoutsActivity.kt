@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
-import com.esmailelhanash.remotekeyboard.data.repository.KeyboardLayoutRepository
 import com.esmailelhanash.remotekeyboard.ui.layoutsactivity.composables.Fab
 import com.esmailelhanash.remotekeyboard.ui.layoutsactivity.composables.Root
 import com.esmailelhanash.remotekeyboard.ui.theme.RemoteKeyboardTheme
