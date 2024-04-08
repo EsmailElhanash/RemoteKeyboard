@@ -10,17 +10,17 @@ import com.esmailelhanash.remotekeyboard.data.model.KeyboardLayout
 @Dao
 interface KeyboardLayoutDao {
     @Query("SELECT * FROM keyboard_layout")
-    fun getAllLayouts(): List<KeyboardLayout>
+    suspend fun getAllLayouts(): List<KeyboardLayout>
 
     @Query("SELECT * FROM keyboard_layout WHERE id = :id")
-    fun getLayout(id: Int): KeyboardLayout?
+    suspend fun getLayout(id: Int): KeyboardLayout?
 
     @Insert
-    fun insertLayout(layout: KeyboardLayout)
+    suspend fun insertLayout(layout: KeyboardLayout)
 
     @Update
-    fun updateLayout(layout: KeyboardLayout)
+    suspend fun updateLayout(layout: KeyboardLayout)
 
     @Delete
-    fun deleteLayout(layout: KeyboardLayout)
+    suspend fun deleteLayout(layout: KeyboardLayout)
 }

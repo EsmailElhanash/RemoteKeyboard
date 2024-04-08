@@ -1,7 +1,12 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    kotlin("kapt")
+    id("com.google.devtools.ksp")
+    id("dagger.hilt.android.plugin")
+
+
+
+
 }
 
 android {
@@ -72,7 +77,8 @@ dependencies {
 
 
     implementation(libs.androidx.room.runtime)
-    kapt(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
+
     implementation(libs.androidx.room.ktx)
     implementation(libs.gson)
     implementation(libs.kotlinx.coroutines.android)
@@ -84,5 +90,7 @@ dependencies {
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.lifecycle.livedata.ktx) // Add this line for LiveData
 
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
 
 }
