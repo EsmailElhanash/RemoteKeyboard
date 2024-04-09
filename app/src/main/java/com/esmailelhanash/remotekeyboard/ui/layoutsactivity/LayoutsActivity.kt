@@ -8,11 +8,13 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import com.esmailelhanash.remotekeyboard.ui.layoutsactivity.composables.Fab
 import com.esmailelhanash.remotekeyboard.ui.layoutsactivity.composables.Root
 import com.esmailelhanash.remotekeyboard.ui.theme.RemoteKeyboardTheme
 import dagger.hilt.android.AndroidEntryPoint
+
 
 @AndroidEntryPoint
 class AllKeyboardLayoutsActivity : ComponentActivity() {
@@ -24,22 +26,17 @@ class AllKeyboardLayoutsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        viewModel.layoutsLiveData.observe(this) { layouts ->
-
-            // print them
-            layouts.forEach { layout ->
-                println(layout)
-            }
-
-        }
         setContent {
             RemoteKeyboardTheme {
+                val layoutsState = viewModel.layoutsLiveData.observeAsState()
+
                 Scaffold(
                     floatingActionButton = { Fab() },
                     modifier = Modifier.fillMaxSize(),
                     content = { innerPadding ->
                         Root(
-                            modifier = Modifier.padding(innerPadding)
+                            modifier = Modifier.padding(innerPadding),
+                            liveData = layoutsState
                         )
                     }
 

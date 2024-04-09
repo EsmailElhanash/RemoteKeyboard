@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -13,7 +14,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.esmailelhanash.remotekeyboard.data.model.KeyboardButton
 import com.esmailelhanash.remotekeyboard.data.model.KeyboardLayout
 import com.esmailelhanash.remotekeyboard.ui.theme.RemoteKeyboardTheme
 
@@ -39,26 +39,10 @@ fun Fab() {
 }
 
 @Composable
-fun Root(modifier: Modifier = Modifier) {
-//    KeyboardLayoutsGrid(
-//        keyboardLayouts = listOf(
-//            KeyboardLayout(
-//                name = "QWERTY",
-//                buttons = listOf(
-//                    KeyboardButton(name = "Q",
-//                        icon = Icons.Default.Add.toString(),
-//                        x = 0,
-//                        y = 0,
-//                        width = 100,
-//                        height = 100,
-//                        color = "#000000",
-//                        textColor = "#FFFFFF",
-//                    )
-//                ),
-//                background = null
-//            )
-//        )
-//    )
+fun Root(modifier: Modifier = Modifier, liveData: State<List<KeyboardLayout>?> ) {
+    KeyboardLayoutsGrid(
+        keyboardLayouts = liveData.value ?: listOf()
+    )
 }
 
 
@@ -68,6 +52,6 @@ fun Root(modifier: Modifier = Modifier) {
 @Composable
 fun RootPreview() {
     RemoteKeyboardTheme {
-        Root()
+//        Root()
     }
 }

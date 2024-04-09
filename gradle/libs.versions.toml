@@ -49,6 +49,7 @@ lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx",
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 
+androidx-compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata" }
 
 
 [plugins]
