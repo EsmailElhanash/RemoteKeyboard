@@ -2,8 +2,9 @@ package com.esmailelhanash.remotekeyboard.di
 
 import android.content.Context
 import androidx.room.Room
-import com.esmailelhanash.remotekeyboard.data.database.AppDatabase
 import com.esmailelhanash.remotekeyboard.data.dao.KeyboardLayoutDao
+import com.esmailelhanash.remotekeyboard.data.database.AppDatabase
+import com.esmailelhanash.remotekeyboard.data.database.MIGRATION_1_2
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,7 +20,9 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase =
-        Room.databaseBuilder(context, AppDatabase::class.java, DBNAME).build()
+        Room.databaseBuilder(context, AppDatabase::class.java, DBNAME)
+            .addMigrations(MIGRATION_1_2)
+            .build()
 
     @Provides
     @Singleton

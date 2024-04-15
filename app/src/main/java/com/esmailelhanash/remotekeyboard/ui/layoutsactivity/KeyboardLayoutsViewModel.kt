@@ -32,8 +32,12 @@ class KeyboardLayoutsViewModel @Inject constructor(
 
     // Example method to add a single layout to the list
     fun addLayout(layout: KeyboardLayout) {
-        val currentList = _layoutsLiveData.value ?: emptyList()
-        _layoutsLiveData.value = currentList + layout
+
+        runBlocking {
+            repository.insertKeyboardLayout(layout)
+            val currentList = _layoutsLiveData.value ?: emptyList()
+            _layoutsLiveData.postValue(currentList + layout)
+        }
     }
 
     // Example method to fetch keyboard layouts (assuming you have a repository or data source)

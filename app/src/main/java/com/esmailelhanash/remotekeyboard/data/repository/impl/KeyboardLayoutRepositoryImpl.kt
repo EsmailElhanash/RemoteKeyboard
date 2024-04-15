@@ -12,4 +12,8 @@ class KeyboardLayoutRepositoryImpl @Inject constructor(
     override suspend fun getKeyboardLayouts(): List<KeyboardLayout> {
         return keyboardLayoutDao.getAllLayouts()
     }
+
+    override suspend fun insertKeyboardLayout(keyboardLayout: KeyboardLayout) {
+        keyboardLayoutDao.insertLayout(keyboardLayout)
+    }
 }
