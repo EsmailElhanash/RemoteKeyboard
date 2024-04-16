@@ -7,12 +7,20 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.esmailelhanash.remotekeyboard.ui.layoutfragment.composables.KeyboardLayoutRoot
 
 // a fragment displaying a keyboard layout, and all its buttons
 // with a tool bar button to add a new button to the keyboard layout
 // it is full screen, and has a toolbar, and landscape
 class KeyboardLayoutFragment : Fragment() {
+
+    // view model for this fragment
+    private val viewModel: LayoutFragmentViewModel by lazy {
+        requireActivity().run {
+            ViewModelProvider(this)[LayoutFragmentViewModel::class.java]
+        }
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -22,7 +30,7 @@ class KeyboardLayoutFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 KeyboardLayoutRoot(
-
+                    viewModel = viewModel
                 )
             }
         }
