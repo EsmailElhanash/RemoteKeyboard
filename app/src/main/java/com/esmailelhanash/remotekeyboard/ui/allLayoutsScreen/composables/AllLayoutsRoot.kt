@@ -2,8 +2,8 @@ package com.esmailelhanash.remotekeyboard.ui.allLayoutsScreen.composables
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -50,7 +50,7 @@ private fun Fab(viewModel: LayoutsGridViewModel) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AllLayoutsRoot(navController: NavHostController) {
-    val viewModel: LayoutsGridViewModel = viewModel() // This obtains the ViewModel instance
+    val viewModel: LayoutsGridViewModel = viewModel()
     Scaffold(
         floatingActionButton = { Fab(viewModel) },
         // app bar:
@@ -59,7 +59,7 @@ fun AllLayoutsRoot(navController: NavHostController) {
                 title = { Text("Keyboard Layouts") },
                 navigationIcon = {
                     IconButton(onClick = { /* Handle navigation icon press */ }) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {
