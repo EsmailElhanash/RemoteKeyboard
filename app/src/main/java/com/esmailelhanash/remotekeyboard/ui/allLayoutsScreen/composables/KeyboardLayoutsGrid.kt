@@ -1,4 +1,5 @@
-package com.esmailelhanash.remotekeyboard.ui.layoutsactivity.composables
+package com.esmailelhanash.remotekeyboard.ui.allLayoutsScreen.composables
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,11 +17,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.esmailelhanash.remotekeyboard.R
 import com.esmailelhanash.remotekeyboard.data.model.KeyboardLayout
 
 @Composable
-fun KeyboardLayoutsGrid(keyboardLayouts: List<KeyboardLayout>, modifier: Modifier = Modifier) {
+fun KeyboardLayoutsGrid(
+    keyboardLayouts: List<KeyboardLayout>,
+    modifier: Modifier = Modifier,
+    navController: NavHostController
+) {
     // Define the number of columns for the grid
     val columns = GridCells.Fixed(3)
 
@@ -30,20 +36,22 @@ fun KeyboardLayoutsGrid(keyboardLayouts: List<KeyboardLayout>, modifier: Modifie
         modifier = modifier,
         content = {
             items(keyboardLayouts) { layout ->
-                KeyboardLayoutItem(layout)
+                KeyboardLayoutItem(layout,navController)
             }
         }
     )
 }
 
 @Composable
-private fun KeyboardLayoutItem(layout: KeyboardLayout) {
+private fun KeyboardLayoutItem(layout: KeyboardLayout, navController: NavHostController) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = Modifier.padding(8.dp)
+            .clickable {
+//                navController.navigate()
+            }
     ) {
-        // an icon layout_icon.xml:
         Icon(
             imageVector = ImageVector.vectorResource(R.drawable.layout_icon),
             contentDescription = null

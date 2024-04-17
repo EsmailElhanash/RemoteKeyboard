@@ -1,4 +1,4 @@
-package com.esmailelhanash.remotekeyboard.ui.layoutsactivity
+package com.esmailelhanash.remotekeyboard.ui.allLayoutsScreen
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -9,7 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 @HiltViewModel
-class KeyboardLayoutsViewModel @Inject constructor(
+class LayoutsGridViewModel @Inject constructor(
     private val repository: KeyboardLayoutRepository
 ) : ViewModel()  {
     // The list of keyboard layouts live data

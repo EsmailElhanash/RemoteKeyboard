@@ -93,5 +93,14 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.compose.runtime.livedata)
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
+
+    implementation(libs.androidx.fragment.ktx)
+
+    implementation(libs.androidx.navigation.compose)
+
+
+
 
 }

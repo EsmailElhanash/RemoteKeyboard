@@ -1,4 +1,4 @@
-package com.esmailelhanash.remotekeyboard.ui.layoutsactivity.composables
+package com.esmailelhanash.remotekeyboard.ui.allLayoutsScreen.composables
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,7 +31,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.esmailelhanash.remotekeyboard.data.model.KeyboardLayout
 import com.esmailelhanash.remotekeyboard.data.model.LayoutBackground
-import com.esmailelhanash.remotekeyboard.ui.layoutsactivity.KeyboardLayoutsViewModel
+import com.esmailelhanash.remotekeyboard.ui.allLayoutsScreen.LayoutsGridViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -40,7 +40,7 @@ import kotlinx.coroutines.launch
 // fun for the dialog, with a callback parameter to set the showDialog state
 @Composable
 fun AddLayoutDialog(
-    viewModel: KeyboardLayoutsViewModel,
+    viewModel: LayoutsGridViewModel,
     updateDialogVisibilityState: (Boolean) -> Unit,
 ) {
     val context = LocalContext.current

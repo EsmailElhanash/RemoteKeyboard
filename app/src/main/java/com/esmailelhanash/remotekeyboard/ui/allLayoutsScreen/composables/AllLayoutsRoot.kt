@@ -1,4 +1,4 @@
-package com.esmailelhanash.remotekeyboard.ui.layoutsactivity.composables
+package com.esmailelhanash.remotekeyboard.ui.allLayoutsScreen.composables
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -21,12 +21,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.esmailelhanash.remotekeyboard.ui.layoutsactivity.KeyboardLayoutsViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import com.esmailelhanash.remotekeyboard.ui.allLayoutsScreen.LayoutsGridViewModel
 import com.esmailelhanash.remotekeyboard.ui.theme.RemoteKeyboardTheme
 
 
 @Composable
-fun Fab(viewModel: KeyboardLayoutsViewModel) {
+private fun Fab(viewModel: LayoutsGridViewModel) {
     var showDialog by remember { mutableStateOf(false) }
     FloatingActionButton(
         onClick = { showDialog = true }, // Set the state to true to show the dialog
@@ -47,7 +49,8 @@ fun Fab(viewModel: KeyboardLayoutsViewModel) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Root(viewModel: KeyboardLayoutsViewModel) {
+fun AllLayoutsRoot(navController: NavHostController) {
+    val viewModel: LayoutsGridViewModel = viewModel() // This obtains the ViewModel instance
     Scaffold(
         floatingActionButton = { Fab(viewModel) },
         // app bar:
@@ -70,7 +73,8 @@ fun Root(viewModel: KeyboardLayoutsViewModel) {
         content = { innerPadding ->
             KeyboardLayoutsGrid(
                 modifier = Modifier.padding(innerPadding),
-                keyboardLayouts = viewModel.layoutsLiveData.observeAsState().value ?: listOf()
+                keyboardLayouts = viewModel.layoutsLiveData.observeAsState().value ?: listOf(),
+                navController = navController
             )
         }
     )
