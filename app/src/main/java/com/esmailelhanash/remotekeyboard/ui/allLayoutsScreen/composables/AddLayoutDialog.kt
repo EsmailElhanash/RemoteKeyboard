@@ -31,7 +31,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.esmailelhanash.remotekeyboard.data.model.KeyboardLayout
 import com.esmailelhanash.remotekeyboard.data.model.LayoutBackground
-import com.esmailelhanash.remotekeyboard.ui.allLayoutsScreen.LayoutsGridViewModel
+import com.esmailelhanash.remotekeyboard.ui.LayoutsViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -40,10 +40,10 @@ import kotlinx.coroutines.launch
 // fun for the dialog, with a callback parameter to set the showDialog state
 @Composable
 fun AddLayoutDialog(
-    viewModel: LayoutsGridViewModel,
+    viewModel: LayoutsViewModel,
     updateDialogVisibilityState: (Boolean) -> Unit,
 ) {
-    val context = LocalContext.current
+    LocalContext.current
     Dialog(
         onDismissRequest = { updateDialogVisibilityState(false) },
         properties = DialogProperties(usePlatformDefaultWidth = true,),

@@ -1,4 +1,4 @@
-package com.esmailelhanash.remotekeyboard.ui.allLayoutsScreen
+package com.esmailelhanash.remotekeyboard.ui
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -10,13 +10,26 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+
 @HiltViewModel
-class LayoutsGridViewModel @Inject constructor(
+class LayoutsViewModel @Inject constructor(
     private val repository: KeyboardLayoutRepository
 ) : ViewModel()  {
     // The list of keyboard layouts live data
     private var _layoutsLiveData = MutableLiveData<List<KeyboardLayout>>()
     val layoutsLiveData: LiveData<List<KeyboardLayout>> = _layoutsLiveData
+
+    private val _selectedLayout = MutableLiveData<KeyboardLayout?>()
+    val selectedLayout: LiveData<KeyboardLayout?> = _selectedLayout
+
+    fun selectLayout(layout: KeyboardLayout) {
+        _selectedLayout.value = layout
+    }
+
+    // Add a function to get the selected layout based on the ID
+    fun getSelectedLayout(): KeyboardLayout? {
+        return _layoutsLiveData.value?.find { it == selectedLayout.value }
+    }
 
     // Initialize with an empty list or fetch from a repository
     init {

@@ -20,12 +20,14 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.esmailelhanash.remotekeyboard.R
 import com.esmailelhanash.remotekeyboard.data.model.KeyboardLayout
+import com.esmailelhanash.remotekeyboard.ui.KeyboardLayoutScreen
 
 @Composable
 fun KeyboardLayoutsGrid(
     keyboardLayouts: List<KeyboardLayout>,
     modifier: Modifier = Modifier,
-    navController: NavHostController
+    navController: NavHostController,
+    onItemClick: (KeyboardLayout) -> Unit
 ) {
     // Define the number of columns for the grid
     val columns = GridCells.Fixed(3)
@@ -36,20 +38,21 @@ fun KeyboardLayoutsGrid(
         modifier = modifier,
         content = {
             items(keyboardLayouts) { layout ->
-                KeyboardLayoutItem(layout,navController)
+                KeyboardLayoutItem(layout,navController,onItemClick)
             }
         }
     )
 }
 
 @Composable
-private fun KeyboardLayoutItem(layout: KeyboardLayout, navController: NavHostController) {
+private fun KeyboardLayoutItem(layout: KeyboardLayout, navController: NavHostController,onItemClick: (KeyboardLayout) -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = Modifier.padding(8.dp)
             .clickable {
-//                navController.navigate()
+                onItemClick(layout)
+                navController.navigate(KeyboardLayoutScreen)
             }
     ) {
         Icon(
