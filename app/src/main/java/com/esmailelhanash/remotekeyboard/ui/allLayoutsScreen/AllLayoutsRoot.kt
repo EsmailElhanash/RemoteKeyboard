@@ -1,4 +1,4 @@
-package com.esmailelhanash.remotekeyboard.ui.allLayoutsScreen.composables
+package com.esmailelhanash.remotekeyboard.ui.allLayoutsScreen
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons

@@ -9,8 +9,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.esmailelhanash.remotekeyboard.ui.allLayoutsScreen.composables.AllLayoutsRoot
-import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.composables.KeyboardLayoutRoot
+import com.esmailelhanash.remotekeyboard.ui.allLayoutsScreen.AllLayoutsRoot
+import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.KeyboardLayoutRoot
 import com.esmailelhanash.remotekeyboard.ui.theme.RemoteKeyboardTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
                         // convert to landscape on navigate to this screen:
                         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
                         KeyboardLayoutRoot(
-                            navController = navController,viewModel = allLayoutsViewModel
+                            viewModel = allLayoutsViewModel
                         )
                     }
                 }

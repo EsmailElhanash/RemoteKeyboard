@@ -1,4 +1,4 @@
-package com.esmailelhanash.remotekeyboard.ui.allLayoutsScreen.composables
+package com.esmailelhanash.remotekeyboard.ui.allLayoutsScreen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
