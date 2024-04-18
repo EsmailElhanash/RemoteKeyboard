@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.esmailelhanash.remotekeyboard.data.model.KeyboardLayout
 import com.esmailelhanash.remotekeyboard.ui.LayoutsViewModel
 import com.esmailelhanash.remotekeyboard.ui.theme.RemoteKeyboardTheme
 
@@ -59,8 +60,9 @@ fun AllLayoutsRoot(navController: NavHostController,viewModel: LayoutsViewModel)
                 modifier = Modifier.padding(innerPadding),
                 keyboardLayouts = viewModel.layoutsLiveData.observeAsState().value ?: listOf(),
                 navController = navController
-            ){
-                viewModel.selectLayout(it)
+            ){ keyboardLayout: KeyboardLayout, b: Boolean ->
+                viewModel.selectLayout(keyboardLayout)
+                viewModel.setEditMode(b)
             }
         }
     )

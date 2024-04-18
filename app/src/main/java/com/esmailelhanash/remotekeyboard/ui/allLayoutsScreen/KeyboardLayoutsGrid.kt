@@ -1,5 +1,6 @@
 package com.esmailelhanash.remotekeyboard.ui.allLayoutsScreen
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -27,7 +28,7 @@ fun KeyboardLayoutsGrid(
     keyboardLayouts: List<KeyboardLayout>,
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    onItemClick: (KeyboardLayout) -> Unit
+    onItemClick: (KeyboardLayout, editMode : Boolean) -> Unit
 ) {
     // Define the number of columns for the grid
     val columns = GridCells.Fixed(3)
@@ -44,16 +45,26 @@ fun KeyboardLayoutsGrid(
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun KeyboardLayoutItem(layout: KeyboardLayout, navController: NavHostController,onItemClick: (KeyboardLayout) -> Unit) {
+private fun KeyboardLayoutItem(
+    layout: KeyboardLayout, navController: NavHostController,
+    onItemClick: (KeyboardLayout, editMode: Boolean) -> Unit
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = Modifier.padding(8.dp)
-            .clickable {
-                onItemClick(layout)
-                navController.navigate(KeyboardLayoutScreen)
-            }
+            .combinedClickable (
+                onClick = {
+                        onItemClick(layout,false)
+                        navController.navigate(KeyboardLayoutScreen)
+                },
+                onLongClick = {
+                    onItemClick(layout,true)
+                    navController.navigate(KeyboardLayoutScreen)
+                }
+            )
     ) {
         Icon(
             imageVector = ImageVector.vectorResource(R.drawable.layout_icon),

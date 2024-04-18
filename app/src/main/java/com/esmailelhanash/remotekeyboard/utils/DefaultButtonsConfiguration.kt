@@ -1,23 +1,20 @@
 package com.esmailelhanash.remotekeyboard.utils
 
+import androidx.compose.ui.graphics.Color
 import com.esmailelhanash.remotekeyboard.data.model.KeyboardButton
 
-object DefaultButtonsConfiguration {
-
-    fun addNewButtonButton(): KeyboardButton {
-        return KeyboardButton(
+val editModeButton: KeyboardButton =
+     KeyboardButton(
             layoutID = -1,
             id = -1,
-            name = "Add new button",
-            keystroke = "b",
+            name = "Edit Layout",
+            keystroke = "null",
             icon = "",
-            x = 0,
-            y = 0,
-            width = 0,
-            height = 0,
-            color = "DefaultColor", // Placeholder value for color
-            borderColor = "DefaultBorderColor", // Placeholder value for borderColor
-            textColor = "DefaultTextColor" // Placeholder value for textColor
+            x = 100,
+            y = 100,
+            width = 100,
+            height = 100,
+            color = Color.LightGray, // Placeholder value for color
+            borderColor = Color.Black, // Placeholder value for borderColor
+            textColor = Color.Black // Placeholder value for textColor
         )
-    }
-}

@@ -22,8 +22,15 @@ class LayoutsViewModel @Inject constructor(
     private val _selectedLayout = MutableLiveData<KeyboardLayout?>()
     val selectedLayout: LiveData<KeyboardLayout?> = _selectedLayout
 
+    private val _editMode = MutableLiveData<Boolean>()
+    val editMode: LiveData<Boolean> = _editMode
+
     fun selectLayout(layout: KeyboardLayout) {
         _selectedLayout.value = layout
+    }
+
+    fun setEditMode(editMode: Boolean) {
+        _editMode.value = editMode
     }
 
     // Add a function to get the selected layout based on the ID
