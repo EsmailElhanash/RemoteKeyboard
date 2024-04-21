@@ -3,7 +3,6 @@ package com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -30,7 +29,7 @@ fun KeyboardLayoutRoot(viewModel: LayoutsViewModel) {
             .fillMaxSize()
             .background(color = selectedLayout?.background?.color ?: MaterialTheme.colorScheme.background),
         content = { innerPadding ->
-            BoxWithConstraints(modifier = Modifier.padding(innerPadding)) {
+            Box(modifier = Modifier.padding(innerPadding)) {
                 if (editMode == true){
                     ButtonItem(editModeButton)
                 }
@@ -49,7 +48,7 @@ fun ButtonItem(button: KeyboardButton) {
             .offset(x = button.x.dp, y = button.y.dp)
             .size(width = button.width.dp, height = button.height.dp)
             .background(color = button.color)
-            .border(width = 1.dp, color = button.borderColor),
+            .border(width = 1.dp, shape = MaterialTheme.shapes.medium, color = button.borderColor),
         contentAlignment = Alignment.Center
     ) {
         // Assuming you have a function to parse color strings to Color objects
