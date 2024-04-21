@@ -1,6 +1,5 @@
 package com.esmailelhanash.remotekeyboard.ui
 
-import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -28,7 +27,6 @@ class MainActivity : ComponentActivity() {
                 val allLayoutsViewModel: LayoutsViewModel = viewModel()
                 NavHost(navController = navController, startDestination = AllLayoutsScreen) {
                     composable(AllLayoutsScreen) {
-                        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
                         AllLayoutsRoot(navController = navController,allLayoutsViewModel)
                     }
                     composable(KeyboardLayoutScreen) {
