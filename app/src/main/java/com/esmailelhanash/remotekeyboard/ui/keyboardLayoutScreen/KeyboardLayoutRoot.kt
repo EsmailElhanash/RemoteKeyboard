@@ -47,7 +47,7 @@ fun ButtonItem(button: KeyboardButton) {
         modifier = Modifier
             .offset(x = button.x.dp, y = button.y.dp)
             .size(width = button.width.dp, height = button.height.dp)
-            .background(color = button.color)
+            .background(color = button.color, shape = MaterialTheme.shapes.medium)
             .border(width = 1.dp, shape = MaterialTheme.shapes.medium, color = button.borderColor),
         contentAlignment = Alignment.Center
     ) {
