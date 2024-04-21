@@ -18,7 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.esmailelhanash.remotekeyboard.ui.LayoutsViewModel
+import com.esmailelhanash.remotekeyboard.ui.EditAction
+import com.esmailelhanash.remotekeyboard.ui.EditViewModel
 
 
 // a dialog to edit a keyboard layout, it has a list of actions to perform
@@ -26,8 +27,8 @@ import com.esmailelhanash.remotekeyboard.ui.LayoutsViewModel
 //drag,
 //resize
 @Composable
-fun EditLayoutDialog(
-    viewModel: LayoutsViewModel,
+fun EditModeActionsDialog(
+    editViewModel: EditViewModel,
     updateDialogVisibilityState: (Boolean) -> Unit,
 ) {
     Dialog(
@@ -52,21 +53,22 @@ fun EditLayoutDialog(
                     Text(text = "add new button", style = MaterialTheme.typography.headlineSmall,
                         modifier = Modifier.fillMaxWidth()
                             .clickable {
-                                // todo show the add new button dialog
+                                editViewModel.setEditAction(EditAction.ADD_NEW_BUTTON)
+
                                 updateDialogVisibilityState(false)
                             }
                     )
                     Text(text = "drag", style = MaterialTheme.typography.headlineSmall,
                         modifier = Modifier.fillMaxWidth()
                             .clickable {
-                                // todo activate drag mode
+                                editViewModel.setEditAction(EditAction.DRAG)
                                 updateDialogVisibilityState(false)
                             }
                     )
                     Text(text = "resize", style = MaterialTheme.typography.headlineSmall,
                         modifier = Modifier.fillMaxWidth()
                             .clickable {
-                                // todo activate resize mode
+                                editViewModel.setEditAction(EditAction.RESIZE)
                                 updateDialogVisibilityState(false)
                             }
                     )

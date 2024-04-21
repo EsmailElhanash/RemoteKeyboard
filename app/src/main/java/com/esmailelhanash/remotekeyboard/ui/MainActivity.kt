@@ -24,14 +24,15 @@ class MainActivity : ComponentActivity() {
         setContent {
             RemoteKeyboardTheme {
                 val navController = rememberNavController()
-                val allLayoutsViewModel: LayoutsViewModel = viewModel()
+                val viewModel : LayoutsViewModel = viewModel()
                 NavHost(navController = navController, startDestination = AllLayoutsScreen) {
+
                     composable(AllLayoutsScreen) {
-                        AllLayoutsRoot(navController = navController,allLayoutsViewModel)
+                        AllLayoutsRoot(navController = navController, viewModel = viewModel)
                     }
                     composable(KeyboardLayoutScreen) {
                         KeyboardLayoutRoot(
-                            viewModel = allLayoutsViewModel
+                            viewModel = viewModel
                         )
                     }
                 }
