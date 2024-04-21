@@ -32,8 +32,6 @@ class MainActivity : ComponentActivity() {
                         AllLayoutsRoot(navController = navController,allLayoutsViewModel)
                     }
                     composable(KeyboardLayoutScreen) {
-                        // convert to landscape on navigate to this screen:
-                        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
                         KeyboardLayoutRoot(
                             viewModel = allLayoutsViewModel
                         )
