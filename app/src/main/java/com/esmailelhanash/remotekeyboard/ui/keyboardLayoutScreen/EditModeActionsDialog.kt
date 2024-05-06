@@ -54,7 +54,6 @@ fun EditModeActionsDialog(
                         modifier = Modifier.fillMaxWidth()
                             .clickable {
                                 editViewModel.setEditAction(EditAction.ADD_NEW_BUTTON)
-
                                 updateDialogVisibilityState(false)
                             }
                     )

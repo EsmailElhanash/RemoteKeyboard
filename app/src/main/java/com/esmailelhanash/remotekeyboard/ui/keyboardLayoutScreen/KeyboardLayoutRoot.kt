@@ -3,6 +3,9 @@ package com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
@@ -25,6 +28,7 @@ import com.esmailelhanash.remotekeyboard.data.model.KeyboardButton
 import com.esmailelhanash.remotekeyboard.ui.EditAction
 import com.esmailelhanash.remotekeyboard.ui.EditViewModel
 import com.esmailelhanash.remotekeyboard.ui.LayoutsViewModel
+import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.addNewButtonDialog.AddNewButtonDialog
 import com.esmailelhanash.remotekeyboard.utils.editModeButton
 
 @Composable
@@ -34,9 +38,27 @@ fun KeyboardLayoutRoot(viewModel: LayoutsViewModel) {
 
     // initiate EditViewModel in the scope of this composable
     val editViewModel : EditViewModel = viewModel()
+    val editAction = editViewModel.editAction.observeAsState()
+    editAction.value?.let {
+        when (it) {
+            EditAction.ADD_NEW_BUTTON -> {
+                AddNewButtonDialog(viewModel){
+                    editViewModel.setEditAction(
+                        EditAction.NULL
+                    )
+                }
+            }
+            EditAction.DRAG -> {
+//                DragKeyboardButtonDialog(editViewModel)
+            }
+            EditAction.RESIZE -> {
+//                ResizeKeyboardButtonDialog(editViewModel)
+            }
 
-    editViewModel.editAction.observeAsState().value?.let {
+            EditAction.NULL -> {
 
+            }
+        }
     }
 
     Scaffold(
@@ -45,13 +67,16 @@ fun KeyboardLayoutRoot(viewModel: LayoutsViewModel) {
             .background(color = selectedLayout?.background?.color ?: MaterialTheme.colorScheme.background),
         content = { innerPadding ->
             Box(modifier = Modifier.padding(innerPadding)) {
+
+                selectedLayout?.keyboardButtons?.forEach { button ->
+                    ButtonItem(button = button, editAction = editAction.value?: EditAction.NULL)
+                }
+
+
                 if (editMode == true){
                     EditButtonItem(
                         editViewModel
                     )
-                }
-                selectedLayout?.keyboardButtons?.forEach { button ->
-                    ButtonItem(button = button, viewModel = viewModel,editViewModel = editViewModel)
                 }
             }
         }
@@ -59,23 +84,38 @@ fun KeyboardLayoutRoot(viewModel: LayoutsViewModel) {
 }
 
 @Composable
-fun ButtonItem(button: KeyboardButton,viewModel: LayoutsViewModel, editViewModel: EditViewModel) {
+fun ButtonItem(button: KeyboardButton,editAction: EditAction) {
+    var offsetX by remember { mutableStateOf(button.x.dp) }
+    var offsetY by remember { mutableStateOf(button.y.dp) }
     Box(
         modifier = Modifier
             .offset(x = button.x.dp, y = button.y.dp)
             .size(width = button.width.dp, height = button.height.dp)
-            .background(color = button.color, shape = MaterialTheme.shapes.medium)
-            .border(width = 1.dp, shape = MaterialTheme.shapes.medium, color = button.borderColor),
+            .background(color = button.backgroundColor, shape = MaterialTheme.shapes.medium)
+            .border(width = 1.dp, shape = MaterialTheme.shapes.medium, color = button.borderColor)
+            .draggable(
+                orientation = Orientation.Vertical,
+                state = rememberDraggableState { delta ->
+                    offsetY += delta.dp
+                }
+            )
+            .draggable(
+                orientation = Orientation.Horizontal,
+                state = rememberDraggableState { delta ->
+                    offsetX += delta.dp
+                }
+            ),
         contentAlignment = Alignment.Center
     ) {
-        // Assuming you have a function to parse color strings to Color objects
-        Text(text = button.name,
+
+
+        Text(
+            text = button.name,
             style = MaterialTheme.typography.bodyMedium,
             color = button.textColor,
-            modifier = Modifier.padding(8.dp).clickable {}
-            )
+            modifier = Modifier.padding(top = 8.dp)
 
-
+        )
     }
 }
 
@@ -88,7 +128,7 @@ private fun EditButtonItem(editViewModel: EditViewModel) {
         modifier = Modifier
             .offset(x = button.x.dp, y = button.y.dp)
             .size(width = button.width.dp, height = button.height.dp)
-            .background(color = button.color, shape = MaterialTheme.shapes.medium)
+            .background(color = button.backgroundColor, shape = MaterialTheme.shapes.medium)
             .border(width = 1.dp, shape = MaterialTheme.shapes.medium, color = button.borderColor),
         contentAlignment = Alignment.Center
     ) {
@@ -98,9 +138,9 @@ private fun EditButtonItem(editViewModel: EditViewModel) {
             modifier = Modifier.padding(8.dp).clickable {
 
                 if (isEditActionInProgress) {
-                    editViewModel.setEditAction(EditAction.NULL)
+//                    editViewModel.setEditAction(EditAction.NULL)
                 } else {
-                    editViewModel.setEditAction(EditAction.ADD_NEW_BUTTON)
+//                    editViewModel.setEditAction(EditAction.ADD_NEW_BUTTON)
                     showEditDialog = true
                 }
 

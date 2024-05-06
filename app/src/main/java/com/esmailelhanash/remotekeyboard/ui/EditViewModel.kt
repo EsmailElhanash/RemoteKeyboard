@@ -8,6 +8,7 @@ class EditViewModel: ViewModel()  {
     private var _editAction = MutableLiveData<EditAction>().apply {
         value = EditAction.NULL
     }
+
     val editAction: LiveData<EditAction> = _editAction
 
     fun setEditAction(editAction: EditAction) {
@@ -16,7 +17,6 @@ class EditViewModel: ViewModel()  {
 
 
 }
-
 enum class EditAction {
     DRAG, ADD_NEW_BUTTON, RESIZE, NULL
 }

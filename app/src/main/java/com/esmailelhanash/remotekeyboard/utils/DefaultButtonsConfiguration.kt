@@ -16,7 +16,7 @@ val editModeButton: KeyboardButton =
             y = 70,
             width = 70,
             height = 70,
-            color = Color.LightGray, // Placeholder value for color
+            backgroundColor = Color.LightGray, // Placeholder value for color
             borderColor = Color.Black, // Placeholder value for borderColor
             textColor = Color.Black // Placeholder value for textColor
         )

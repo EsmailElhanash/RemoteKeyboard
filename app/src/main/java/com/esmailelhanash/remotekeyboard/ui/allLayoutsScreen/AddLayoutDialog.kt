@@ -8,9 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -25,11 +23,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.esmailelhanash.remotekeyboard.data.model.KeyboardButton
 import com.esmailelhanash.remotekeyboard.data.model.KeyboardLayout
 import com.esmailelhanash.remotekeyboard.data.model.LayoutBackground
+import com.esmailelhanash.remotekeyboard.data.repository.KeyboardLayoutRepository
 import com.esmailelhanash.remotekeyboard.ui.LayoutsViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -58,17 +59,15 @@ fun AddLayoutDialog(
                 // scrollable column:
                 Column(
                     modifier = Modifier
-                        .padding(16.dp)
-                        .fillMaxWidth()
-                        .verticalScroll(
-                            rememberScrollState()
-                        ),
-                    verticalArrangement = Arrangement.SpaceBetween
+                       .padding(16.dp)
                 ) {
                     Text(
                         text = "Add new keyboard layout",
                         style = MaterialTheme.typography.headlineSmall
                     )
+                    //spacer:
+                    Spacer(modifier = Modifier.height(16.dp))
+
                     var textState by remember { mutableStateOf(TextFieldValue("")) }
                     TextField(
                         value = textState,
@@ -119,4 +118,46 @@ fun AddLayoutDialog(
         }
     )
 
+}
+
+
+// preview:
+@Composable
+@Preview
+fun AddLayoutDialogPreview() {
+    AddLayoutDialog(
+        viewModel = mockLayoutsViewModel(),
+        updateDialogVisibilityState = { }
+    )
+}
+
+// mock layouts viewmodel
+@Composable
+private fun mockLayoutsViewModel() =
+    LayoutsViewModel(mockKeyboardLayoutRepository())
+
+
+private fun mockKeyboardLayoutRepository(): KeyboardLayoutRepository {
+
+    // return some mock data
+    return object : KeyboardLayoutRepository {
+        override suspend fun getKeyboardLayouts(): List<KeyboardLayout> {
+            return listOf()
+        }
+
+        override suspend fun insertKeyboardLayout(keyboardLayout: KeyboardLayout) {
+            TODO("Not yet implemented")
+        }
+
+        override suspend fun updateKeyboardLayout(keyboardLayout: KeyboardLayout) {
+            TODO("Not yet implemented")
+        }
+
+        override suspend fun updateLayoutButtons(
+            layout: KeyboardLayout,
+            buttons: List<KeyboardButton>
+        ) {
+            TODO("Not yet implemented")
+        }
+    }
 }

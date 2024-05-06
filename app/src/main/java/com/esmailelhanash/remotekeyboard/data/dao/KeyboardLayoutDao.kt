@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import com.esmailelhanash.remotekeyboard.data.model.KeyboardButton
 import com.esmailelhanash.remotekeyboard.data.model.KeyboardLayout
 
 @Dao
@@ -23,4 +24,8 @@ interface KeyboardLayoutDao {
 
     @Delete
     suspend fun deleteLayout(layout: KeyboardLayout)
+
+    // add button to layout
+    @Query("UPDATE keyboard_layout SET layout_buttons = :buttons WHERE id = :layoutId")
+    suspend fun addButtonToLayout(layoutId: Int, buttons: List<KeyboardButton>)
 }

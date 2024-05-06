@@ -12,7 +12,9 @@ data class KeyboardButton(
     val y: Int,
     val width: Int,
     val height: Int,
-    val color: Color,
+    val backgroundColor: Color,
     val borderColor: Color,
     val textColor: Color,
+    // todo shadow, as a function of the button color
+
 )
