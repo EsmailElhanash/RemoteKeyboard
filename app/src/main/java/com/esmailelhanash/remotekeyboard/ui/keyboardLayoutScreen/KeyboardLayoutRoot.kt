@@ -3,9 +3,7 @@ package com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.draggable
-import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
@@ -22,6 +20,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.esmailelhanash.remotekeyboard.data.model.KeyboardButton
@@ -85,26 +85,24 @@ fun KeyboardLayoutRoot(viewModel: LayoutsViewModel) {
 
 @Composable
 fun ButtonItem(button: KeyboardButton,editAction: EditAction) {
-    var offsetX by remember { mutableStateOf(button.x.dp) }
-    var offsetY by remember { mutableStateOf(button.y.dp) }
+
+    var maxOffset by remember { mutableStateOf(Offset(button.x.toFloat(), button.y.toFloat())) }
     Box(
         modifier = Modifier
-            .offset(x = button.x.dp, y = button.y.dp)
+            .offset(x = maxOffset.x.dp, y = maxOffset.y.dp)
             .size(width = button.width.dp, height = button.height.dp)
             .background(color = button.backgroundColor, shape = MaterialTheme.shapes.medium)
             .border(width = 1.dp, shape = MaterialTheme.shapes.medium, color = button.borderColor)
-            .draggable(
-                orientation = Orientation.Vertical,
-                state = rememberDraggableState { delta ->
-                    offsetY += delta.dp
+            .pointerInput(Unit) {
+                if (editAction == EditAction.DRAG) {
+                    detectDragGestures { _, dragAmount ->
+                        maxOffset = maxOffset.plus(dragAmount.div(3.0F))
+                        button.x = maxOffset.x.toInt()
+                    }
                 }
-            )
-            .draggable(
-                orientation = Orientation.Horizontal,
-                state = rememberDraggableState { delta ->
-                    offsetX += delta.dp
-                }
-            ),
+            }
+
+                ,
         contentAlignment = Alignment.Center
     ) {
 
