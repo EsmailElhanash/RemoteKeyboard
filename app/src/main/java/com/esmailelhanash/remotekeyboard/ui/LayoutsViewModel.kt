@@ -56,30 +56,39 @@ class LayoutsViewModel @Inject constructor(
         }
     }
 
-fun addButtonToSelectedLayout(button: KeyboardButton) {
-    val currentSelectedLayout = _selectedLayout.value
-    if (currentSelectedLayout != null) {
-        // Create a new list of buttons by adding the new button to the existing list
-        val updatedButtons = currentSelectedLayout.keyboardButtons + button
-
-        // Create a new instance of KeyboardLayout with the updated list of buttons
-        val updatedLayout = currentSelectedLayout.copy(keyboardButtons = updatedButtons)
-
-        viewModelScope.launch {
-            // Update the layout in the repository
-            repository.updateKeyboardLayout(updatedLayout)
-
-            // Optionally, update the LiveData to reflect the change in the UI
-            _selectedLayout.postValue(updatedLayout)
-
-            // If you maintain a list of layouts, you might also need to update that
-            val updatedLayouts = _layoutsLiveData.value?.map {
-                if (it.id == updatedLayout.id) updatedLayout else it
-            } ?: listOf()
-            _layoutsLiveData.postValue(updatedLayouts)
+    fun saveEditedLayout() {
+        val currentSelectedLayout = _selectedLayout.value
+        if (currentSelectedLayout != null) {
+            viewModelScope.launch {
+                repository.updateKeyboardLayout(currentSelectedLayout)
+            }
         }
     }
-}
+
+    fun addButtonToSelectedLayout(button: KeyboardButton) {
+        val currentSelectedLayout = _selectedLayout.value
+        if (currentSelectedLayout != null) {
+            // Create a new list of buttons by adding the new button to the existing list
+            val updatedButtons = currentSelectedLayout.keyboardButtons + button
+
+            // Create a new instance of KeyboardLayout with the updated list of buttons
+            val updatedLayout = currentSelectedLayout.copy(keyboardButtons = updatedButtons)
+
+            viewModelScope.launch {
+                // Update the layout in the repository
+                repository.updateKeyboardLayout(updatedLayout)
+
+                // Optionally, update the LiveData to reflect the change in the UI
+                _selectedLayout.postValue(updatedLayout)
+
+                // If you maintain a list of layouts, you might also need to update that
+                val updatedLayouts = _layoutsLiveData.value?.map {
+                    if (it.id == updatedLayout.id) updatedLayout else it
+                } ?: listOf()
+                _layoutsLiveData.postValue(updatedLayouts)
+            }
+        }
+    }
 
     // Example method to fetch keyboard layouts (assuming you have a repository or data source)
     // This is just a placeholder to indicate where you might fetch data from a repository
