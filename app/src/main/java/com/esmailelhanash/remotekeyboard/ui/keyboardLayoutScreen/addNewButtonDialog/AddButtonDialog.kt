@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -46,11 +47,15 @@ import com.esmailelhanash.remotekeyboard.ui.theme.OldRose
 import com.esmailelhanash.remotekeyboard.utils.colorsList
 import com.esmailelhanash.remotekeyboard.utils.iconsList
 import kotlinx.coroutines.delay
-
+import kotlin.random.Random
 
 @Composable
 fun AddNewButtonDialog(layoutsViewModel: LayoutsViewModel, dismiss: () -> Unit) {
     val addButtonViewModel: AddButtonViewModel = viewModel()
+
+    // todo remove this
+    fillForm(addButtonViewModel)
+
     DialogRoot{
         Column(
             modifier = Modifier
@@ -348,5 +353,22 @@ fun IconSelectDialogPreview() {
         // do nothing
     }
 }
+
+
+// a help fun to fill the form when in debug mode, takes the viewmodel as a parameter and fills with random data:
+private fun fillForm(addButtonViewModel: AddButtonViewModel) {
+    addButtonViewModel.buttonName = TextFieldValue("Button")
+    addButtonViewModel.keyStroke = TextFieldValue("A")
+    addButtonViewModel.width = TextFieldValue("100")
+    addButtonViewModel.height = TextFieldValue("100")
+    addButtonViewModel.selectedIcon = iconsList[0]
+    addButtonViewModel.selectedBGColor = randomColorFromColorList()
+    addButtonViewModel.selectedTextColor = randomColorFromColorList()
+    addButtonViewModel.selectedBorderColor = randomColorFromColorList()
+}
+
+
+private fun randomColorFromColorList() = colorsList[Random.nextInt(0, colorsList.size)]
+
 
 

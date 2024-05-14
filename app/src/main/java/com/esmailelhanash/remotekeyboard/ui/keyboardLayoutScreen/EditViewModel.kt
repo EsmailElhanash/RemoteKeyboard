@@ -3,11 +3,21 @@ package com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.esmailelhanash.remotekeyboard.data.model.KeyboardButton
 
 class EditViewModel: ViewModel() {
     private var _editAction = MutableLiveData<EditAction?>()
     val editAction: LiveData<EditAction?> = _editAction
 
+    // a live data for a button being edited, most edit action are applicable to buttons
+    // except for add new button, which is a special case
+    // and change background, which applies to the whole keyboard layout
+    private var _editButton = MutableLiveData<KeyboardButton?>()
+    val editButton: LiveData<KeyboardButton?> = _editButton
+
+    fun setEditButton(editButton: KeyboardButton?) {
+        _editButton.value = editButton
+    }
     fun setEditAction(editAction: EditAction?) {
         _editAction.value = editAction
     }

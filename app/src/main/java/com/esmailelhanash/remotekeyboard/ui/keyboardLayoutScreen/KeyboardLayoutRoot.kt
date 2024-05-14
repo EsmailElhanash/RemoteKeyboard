@@ -15,9 +15,9 @@ import com.esmailelhanash.remotekeyboard.ui.LayoutsViewModel
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.addNewButtonDialog.AddNewButtonDialog
 
 @Composable
-fun KeyboardLayoutRoot(viewModel: LayoutsViewModel) {
-    val selectedLayout by viewModel.selectedLayout.observeAsState()
-    val editMode by viewModel.editMode.observeAsState()
+fun KeyboardLayoutRoot(layoutsViewModel: LayoutsViewModel) {
+    val selectedLayout by layoutsViewModel.selectedLayout.observeAsState()
+    val editMode by layoutsViewModel.editMode.observeAsState()
 
     // initiate EditViewModel in the scope of this composable
     val editViewModel : EditViewModel = viewModel()
@@ -25,7 +25,7 @@ fun KeyboardLayoutRoot(viewModel: LayoutsViewModel) {
     editViewModel.editAction.observeAsState().let {
         when (it.value) {
             EditAction.ADD_NEW_BUTTON -> {
-                AddNewButtonDialog(viewModel){
+                AddNewButtonDialog(layoutsViewModel){
                     editViewModel.setEditAction(null)
                 }
             }
@@ -49,7 +49,8 @@ fun KeyboardLayoutRoot(viewModel: LayoutsViewModel) {
 
                 selectedLayout?.keyboardButtons?.forEach { button ->
                     ButtonItem(button = button, editViewModel = editViewModel){
-                        viewModel.saveEditedLayout()
+                        layoutsViewModel.updateButtonInSelectedLayout(it)
+                        layoutsViewModel.saveEditedLayout()
                     }
                 }
 

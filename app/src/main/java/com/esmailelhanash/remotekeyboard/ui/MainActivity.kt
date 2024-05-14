@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
                     }
                     composable(KeyboardLayoutScreen) {
                         KeyboardLayoutRoot(
-                            viewModel = viewModel
+                            layoutsViewModel = viewModel
                         )
                     }
                 }

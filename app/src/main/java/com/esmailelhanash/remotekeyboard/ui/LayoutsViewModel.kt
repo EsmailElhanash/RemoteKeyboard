@@ -68,6 +68,31 @@ class LayoutsViewModel @Inject constructor(
         }
     }
 
+    fun updateButtonInSelectedLayout(button: KeyboardButton) {
+        val currentSelectedLayout = _selectedLayout.value
+        if (currentSelectedLayout!= null) {
+            val updatedButtons = currentSelectedLayout.keyboardButtons.map {
+                if (it.id == button.id) button else it
+            }
+
+            // Create a new instance of KeyboardLayout with the updated list of buttons
+            val updatedLayout = currentSelectedLayout.copy(keyboardButtons = updatedButtons)
+
+            viewModelScope.launch {
+                // Update the layout in the repository
+                repository.updateKeyboardLayout(updatedLayout)
+
+                // Optionally, update the LiveData to reflect the change in the UI
+                _selectedLayout.postValue(updatedLayout)
+
+                // If you maintain a list of layouts, you might also need to update that
+                val updatedLayouts = _layoutsLiveData.value?.map {
+                    if (it.id == updatedLayout.id) updatedLayout else it
+                } ?: listOf()
+                _layoutsLiveData.postValue(updatedLayouts)
+            }
+        }
+    }
     fun addButtonToSelectedLayout(button: KeyboardButton) {
         val currentSelectedLayout = _selectedLayout.value
         if (currentSelectedLayout != null) {

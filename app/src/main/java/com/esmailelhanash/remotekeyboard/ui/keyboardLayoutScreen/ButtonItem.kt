@@ -1,5 +1,6 @@
 package com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,29 +22,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.esmailelhanash.remotekeyboard.data.model.KeyboardButton
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.editActionsDialog.EditModeActionsDialog
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.renameDialog.RenameButtonDialog
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.resizeButtonDialog.ResizeButtonDialog
 import com.esmailelhanash.remotekeyboard.utils.editModeButton
 
+private const val TAG = "ButtonItem"
 
-class DialogsViewModel : ViewModel() {
-    var resizeDialogVisible by  mutableStateOf(false)
-    var renameDialogVisible by mutableStateOf(false)
-    var changeIconDialogVisible by mutableStateOf(false)
-    var changeColorsDialogVisible by mutableStateOf(false)
-    var changeBgDialogVisible by mutableStateOf(false)
-    var changeKeystrokeDialogVisible by mutableStateOf(false)
-}
 @Composable
 fun ButtonItem(button: KeyboardButton, editViewModel: EditViewModel, onEditConfirm: (KeyboardButton) -> Unit) {
-
-    val dialogsViewModel : DialogsViewModel = viewModel()
-
-
     val editAction by editViewModel.editAction.observeAsState()
     var maxOffset by remember { mutableStateOf(Offset(button.x.toFloat(), button.y.toFloat())) }
     Box(
@@ -54,6 +42,7 @@ fun ButtonItem(button: KeyboardButton, editViewModel: EditViewModel, onEditConfi
             .border(width = 1.dp, shape = MaterialTheme.shapes.medium, color = button.borderColor)
             .pointerInput(Unit) {
                 if (editAction == EditAction.DRAG) {
+                    Log.d(TAG, "ButtonItem: $button is in drag mode")
                     detectDragGestures { _, dragAmount ->
                         maxOffset = maxOffset.plus(dragAmount.div(3.0F))
                         button.x = maxOffset.x.toInt()
@@ -61,28 +50,7 @@ fun ButtonItem(button: KeyboardButton, editViewModel: EditViewModel, onEditConfi
                     }
                 }
             }.clickable {
-                when (editAction) {
-                    EditAction.RESIZE -> {
-                        dialogsViewModel.resizeDialogVisible = true
-                    }
-                    EditAction.RENAME -> {
-                        dialogsViewModel.renameDialogVisible = true
-                    }
-                    EditAction.CHANGE_ICON -> {
-                        dialogsViewModel.changeIconDialogVisible = true
-                    }
-                    EditAction.CHANGE_KEYSTROKE -> {
-                        dialogsViewModel.changeKeystrokeDialogVisible = true
-                    }
-                    EditAction.CHANGE_COLORS -> {
-                        dialogsViewModel.changeColorsDialogVisible = true
-                    }
-                    EditAction.CHANGE_BG -> {
-                        dialogsViewModel.changeBgDialogVisible = true
-                    }
-
-                    else -> {}
-                }
+                editViewModel.setEditButton(button)
             },
         contentAlignment = Alignment.Center
     ) {
@@ -95,43 +63,50 @@ fun ButtonItem(button: KeyboardButton, editViewModel: EditViewModel, onEditConfi
         )
     }
 
-    Dialogs(button = button, onEditConfirm = onEditConfirm, dialogsViewModel = dialogsViewModel)
+    Dialogs( onEditConfirm = onEditConfirm, editViewModel )
 }
 @Composable
-private fun Dialogs(button: KeyboardButton, onEditConfirm: (KeyboardButton) -> Unit, dialogsViewModel: DialogsViewModel) {
-    if (dialogsViewModel.resizeDialogVisible) {
-        ResizeButtonDialog(
-            button = button,
-            onConfirm = { width, height ->
-                onEditConfirm(button.apply {
-                    this.width = width
-                    this.height = height
-                })
-                dialogsViewModel.resizeDialogVisible = false
-            },
-            onCancel = {
-                dialogsViewModel.resizeDialogVisible = false
-            }
-        )
-    }else if (dialogsViewModel.renameDialogVisible) {
-        RenameButtonDialog(
-            button = button,
-            onConfirm = { newName ->
-                onEditConfirm(button.apply {
-                    this.name = newName
-                })
-                dialogsViewModel.renameDialogVisible = false
-            },
-            onCancel = {
-                dialogsViewModel.renameDialogVisible = false
-            }
-        )
-    }
-    else if (dialogsViewModel.changeIconDialogVisible) {}
-    else if (dialogsViewModel.changeKeystrokeDialogVisible) {}
-    else if (dialogsViewModel.changeColorsDialogVisible) {}
-    else if (dialogsViewModel.changeBgDialogVisible) {}
-    else if (dialogsViewModel.changeIconDialogVisible) {}
+private fun Dialogs(onEditConfirm: (KeyboardButton) -> Unit, editViewModel: EditViewModel) {
+   editViewModel.editButton.observeAsState().value?.let { button ->
+       when (editViewModel.editAction.value){
+           EditAction.RESIZE -> {
+               ResizeButtonDialog(
+                   button = button,
+                   onConfirm = { width, height ->
+                       onEditConfirm(button.apply {
+                           this.width = width
+                           this.height = height
+                       })
+                       editViewModel.setEditButton(null)
+                   },
+                   onCancel = {
+                       editViewModel.setEditButton(null)
+                   }
+               )
+           }
+           EditAction.RENAME -> {
+               RenameButtonDialog(
+                   button = button,
+                   onConfirm = { newName ->
+                       onEditConfirm(button.apply {
+                           this.name = newName
+                       })
+                       editViewModel.setEditButton(null)
+                   },
+                   onCancel = {
+                       editViewModel.setEditButton(null)
+                   }
+               )
+           }
+           EditAction.CHANGE_ICON -> TODO()
+           EditAction.CHANGE_KEYSTROKE -> TODO()
+           EditAction.CHANGE_COLORS -> TODO()
+           EditAction.CHANGE_BG -> TODO()
+           else -> {}
+       }
+
+
+   }
 
 }
 
