@@ -27,8 +27,12 @@ private fun Fab(viewModel: LayoutsViewModel) {
     var showDialog by remember { mutableStateOf(false) }
     FloatingActionButton(
         onClick = { showDialog = true }, // Set the state to true to show the dialog
-        modifier = Modifier.padding(16.dp)
-
+        modifier = Modifier.padding(
+            start = 48.dp,
+            end = 48.dp,
+            bottom = 16.dp,
+            top = 16.dp
+        )
     ) {
         Icon(
             imageVector = Icons.Default.Add,

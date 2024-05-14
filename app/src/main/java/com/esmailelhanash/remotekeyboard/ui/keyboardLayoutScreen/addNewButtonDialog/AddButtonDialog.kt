@@ -39,6 +39,7 @@ import com.esmailelhanash.remotekeyboard.data.model.KeyboardButton
 import com.esmailelhanash.remotekeyboard.data.model.KeyboardLayout
 import com.esmailelhanash.remotekeyboard.data.repository.KeyboardLayoutRepository
 import com.esmailelhanash.remotekeyboard.ui.LayoutsViewModel
+import com.esmailelhanash.remotekeyboard.ui.common.DialogRoot
 import com.esmailelhanash.remotekeyboard.ui.theme.BlackBean
 import com.esmailelhanash.remotekeyboard.ui.theme.Champagne
 import com.esmailelhanash.remotekeyboard.ui.theme.OldRose
@@ -48,104 +49,96 @@ import kotlinx.coroutines.delay
 
 
 @Composable
-fun AddNewButtonDialog(layoutsViewModel: LayoutsViewModel, updateLayoutState: (Boolean) -> Unit) {
+fun AddNewButtonDialog(layoutsViewModel: LayoutsViewModel, dismiss: () -> Unit) {
     val addButtonViewModel: AddButtonViewModel = viewModel()
+    DialogRoot{
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth()
+                .verticalScroll(
+                    rememberScrollState()
+                ),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ){
+            DialogTitle("Add New Button")
+            FormTextField(
+                label = "Button Name",
+                value = addButtonViewModel.buttonName,
+                onValueChange = {
+                    addButtonViewModel.buttonName = it
+                },
+                keyboardType = KeyboardType.Text
+            )
+            FormTextField(
+                label = "Key Stroke",
+                value = addButtonViewModel.keyStroke,
+                onValueChange = {
+                    addButtonViewModel.keyStroke = it
+                },
+                keyboardType = KeyboardType.Text
+            )
+            FormTextField(
+                label = "Width",
+                value = addButtonViewModel.width,
+                onValueChange = {
+                    addButtonViewModel.width = it
+                },
+                keyboardType = KeyboardType.Number
+            )
+            FormTextField(
+                label = "Height",
+                value = addButtonViewModel.height,
+                onValueChange = {
+                    addButtonViewModel.height = it
+                },
+                keyboardType = KeyboardType.Number
+            )
 
-    Dialog(
-        onDismissRequest = {},
-        properties = DialogProperties(usePlatformDefaultWidth = false,),
-        content = {
-            DialogSurfaceWrapper{
-                Column(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .fillMaxWidth()
-                        .verticalScroll(
-                            rememberScrollState()
-                        ),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ){
-                    DialogTitle("Add New Button")
-                    FormTextField(
-                        label = "Button Name",
-                        value = addButtonViewModel.buttonName,
-                        onValueChange = {
-                            addButtonViewModel.buttonName = it
-                        },
-                        keyboardType = KeyboardType.Text
-                    )
-                    FormTextField(
-                        label = "Key Stroke",
-                        value = addButtonViewModel.keyStroke,
-                        onValueChange = {
-                            addButtonViewModel.keyStroke = it
-                        },
-                        keyboardType = KeyboardType.Text
-                    )
-                    FormTextField(
-                        label = "Width",
-                        value = addButtonViewModel.width,
-                        onValueChange = {
-                            addButtonViewModel.width = it
-                        },
-                        keyboardType = KeyboardType.Number
-                    )
-                    FormTextField(
-                        label = "Height",
-                        value = addButtonViewModel.height,
-                        onValueChange = {
-                            addButtonViewModel.height = it
-                        },
-                        keyboardType = KeyboardType.Number
-                    )
-
-                    IconSelectorRow(
-                        addButtonViewModel.selectedIcon ?: Icons.Default.AddCircle
-                    ){
-                        addButtonViewModel.showIconsDialog = true
-                    }
-                    ColorSelectorRow(
-                        selectedColor = addButtonViewModel.selectedBGColor,
-                        prompt = "Button Background Color",
-                        onBoxClick = {
-                            addButtonViewModel.showColorsDialog = true
-                            addButtonViewModel.activeColorSelection = ColorSelectionType.BG_COLOR
-                        },
-                    )
-                    ColorSelectorRow(
-                        selectedColor = addButtonViewModel.selectedTextColor,
-                        prompt = "Button Text Color",
-                        onBoxClick = {
-                            addButtonViewModel.showColorsDialog = true
-                            addButtonViewModel.activeColorSelection = ColorSelectionType.TEXT_COLOR
-                        },
-                    )
-                    ColorSelectorRow(
-                        selectedColor = addButtonViewModel.selectedBorderColor,
-                        prompt = "Button Border Color",
-                        onBoxClick = {
-                            addButtonViewModel.showColorsDialog = true
-                            addButtonViewModel.activeColorSelection = ColorSelectionType.BORDER_COLOR
-                        },
-                    )
-                    // spacer
-                    Spacer(modifier = Modifier.height(16.dp))
-                    // a row for confirm or cancel buttons
-                    ActionButtons(onCancel = {
-                            updateLayoutState(false)
-                        },
-                        onConfirm = confirm(
-                            addButtonViewModel,
-                            layoutsViewModel,
-                            updateLayoutState
-                        )
-                    )
-                }
+            IconSelectorRow(
+                addButtonViewModel.selectedIcon ?: Icons.Default.AddCircle
+            ){
+                addButtonViewModel.showIconsDialog = true
             }
-            PopupComposable(addButtonViewModel = addButtonViewModel)
-            
+            ColorSelectorRow(
+                selectedColor = addButtonViewModel.selectedBGColor,
+                prompt = "Button Background Color",
+                onBoxClick = {
+                    addButtonViewModel.showColorsDialog = true
+                    addButtonViewModel.activeColorSelection = ColorSelectionType.BG_COLOR
+                },
+            )
+            ColorSelectorRow(
+                selectedColor = addButtonViewModel.selectedTextColor,
+                prompt = "Button Text Color",
+                onBoxClick = {
+                    addButtonViewModel.showColorsDialog = true
+                    addButtonViewModel.activeColorSelection = ColorSelectionType.TEXT_COLOR
+                },
+            )
+            ColorSelectorRow(
+                selectedColor = addButtonViewModel.selectedBorderColor,
+                prompt = "Button Border Color",
+                onBoxClick = {
+                    addButtonViewModel.showColorsDialog = true
+                    addButtonViewModel.activeColorSelection = ColorSelectionType.BORDER_COLOR
+                },
+            )
+            // spacer
+            Spacer(modifier = Modifier.height(16.dp))
+            // a row for confirm or cancel buttons
+            ActionButtons(onCancel = {
+                    dismiss()
+                },
+                onConfirm = confirm(
+                    addButtonViewModel,
+                    layoutsViewModel,
+                    dismiss
+                )
+            )
         }
-    )
+    }
+    PopupComposable(addButtonViewModel = addButtonViewModel)
 }
 
 @Composable
@@ -204,7 +197,7 @@ private fun PopupComposable(addButtonViewModel: AddButtonViewModel){
 private fun confirm(
     addButtonViewModel: AddButtonViewModel,
     layoutsViewModel: LayoutsViewModel,
-    updateLayoutState: (Boolean) -> Unit
+    dismiss: () -> Unit
 ) = (onConfirm@{
     val result = addButtonViewModel.checkFormCorrectness()
     if (result) {
@@ -232,22 +225,13 @@ private fun confirm(
             )
         )
         // dismiss the dialog:
-        updateLayoutState(false)
+        dismiss()
     } else {
         addButtonViewModel.inCompleteFields = true
     }
 })
 
-@Composable
-private fun DialogSurfaceWrapper(content: @Composable () -> Unit) {
-    Surface(
-        shape = RoundedCornerShape(8.dp),
-        color = MaterialTheme.colorScheme.surface,
-        modifier = Modifier.fillMaxWidth(0.9F).fillMaxHeight()
-    ) {
-        content()
-    }
-}
+
 // preview, landscape:
 
 @Preview(showBackground = true,widthDp = 1920, heightDp = 1080)

@@ -8,10 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -25,13 +23,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import com.esmailelhanash.remotekeyboard.data.model.KeyboardButton
 import com.esmailelhanash.remotekeyboard.data.model.KeyboardLayout
 import com.esmailelhanash.remotekeyboard.data.model.LayoutBackground
 import com.esmailelhanash.remotekeyboard.data.repository.KeyboardLayoutRepository
 import com.esmailelhanash.remotekeyboard.ui.LayoutsViewModel
+import com.esmailelhanash.remotekeyboard.ui.common.DialogRoot
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -43,81 +40,65 @@ fun AddLayoutDialog(
     viewModel: LayoutsViewModel,
     updateDialogVisibilityState: (Boolean) -> Unit,
 ) {
-    Dialog(
-        onDismissRequest = { updateDialogVisibilityState(false) },
-        properties = DialogProperties(usePlatformDefaultWidth = true,),
+    DialogRoot {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "Add new keyboard layout",
+                style = MaterialTheme.typography.headlineSmall
+            )
+            //spacer:
+            Spacer(modifier = Modifier.height(16.dp))
 
-        content = {
-            Surface(
-                shape = RoundedCornerShape(8.dp),
-                color = MaterialTheme.colorScheme.surface,
-//                elevation = 8.dp,
-                modifier = Modifier
-                    .width(300.dp) // specify width
-                    .height(200.dp) // specify height
+            var textState by remember { mutableStateOf(TextFieldValue("")) }
+            TextField(
+                value = textState,
+                label = {
+                    Text(text = "Layout name")
+                },
+                onValueChange = { textState = it },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Row(
+                horizontalArrangement = Arrangement.End,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                // scrollable column:
-                Column(
-                    modifier = Modifier
-                       .padding(16.dp)
-                ) {
-                    Text(
-                        text = "Add new keyboard layout",
-                        style = MaterialTheme.typography.headlineSmall
-                    )
-                    //spacer:
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    var textState by remember { mutableStateOf(TextFieldValue("")) }
-                    TextField(
-                        value = textState,
-                        label = {
-                                Text(text = "Layout name")
-                        },
-                        onValueChange = { textState = it },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Row(
-                        horizontalArrangement = Arrangement.End,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        TextButton(
-                            onClick = {
-                                updateDialogVisibilityState(false)
-                            }
-                        ) {
-                            Text("Cancel")
-                        }
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Button(
-                            onClick = {
-                                CoroutineScope(
-                                    Dispatchers.IO
-                                ).launch {
-                                        viewModel.addLayout(
-                                            KeyboardLayout(
-                                                name = textState.text,
-                                                keyboardButtons = listOf(),
-                                                background = LayoutBackground(
-                                                    color = Color.Black,
-                                                    image = null
-                                                ),
-                                            )
-                                        )
-
-                                        updateDialogVisibilityState(false)
-                                    }
-
-                            },
-                        ) {
-                            Text("Confirm", color = Color.White)
-                        }
+                TextButton(
+                    onClick = {
+                        updateDialogVisibilityState(false)
                     }
+                ) {
+                    Text("Cancel")
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Button(
+                    onClick = {
+                        CoroutineScope(
+                            Dispatchers.IO
+                        ).launch {
+                            viewModel.addLayout(
+                                KeyboardLayout(
+                                    name = textState.text,
+                                    keyboardButtons = listOf(),
+                                    background = LayoutBackground(
+                                        color = Color.Black,
+                                        image = null
+                                    ),
+                                )
+                            )
+
+                            updateDialogVisibilityState(false)
+                        }
+
+                    },
+                ) {
+                    Text("Confirm", color = Color.White)
                 }
             }
         }
-    )
-
+    }
 }
 
 

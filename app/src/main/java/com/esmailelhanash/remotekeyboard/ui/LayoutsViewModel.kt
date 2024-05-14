@@ -16,6 +16,7 @@ import javax.inject.Inject
 class LayoutsViewModel @Inject constructor(
     private val repository: KeyboardLayoutRepository
 ) : ViewModel()  {
+
     // The list of keyboard layouts live data
     private var _layoutsLiveData = MutableLiveData<List<KeyboardLayout>>()
     val layoutsLiveData: LiveData<List<KeyboardLayout>> = _layoutsLiveData
@@ -23,12 +24,21 @@ class LayoutsViewModel @Inject constructor(
     private val _selectedLayout = MutableLiveData<KeyboardLayout?>()
     val selectedLayout: LiveData<KeyboardLayout?> = _selectedLayout
 
+
+    private val _selectedButton = MutableLiveData<KeyboardButton>()
+    val selectedButton: LiveData<KeyboardButton> = _selectedButton
+
     private val _editMode = MutableLiveData<Boolean>()
     val editMode: LiveData<Boolean> = _editMode
 
     fun selectLayout(layout: KeyboardLayout) {
         _selectedLayout.value = layout
     }
+
+    fun selectButton(button: KeyboardButton?) {
+        _selectedButton.value = button
+    }
+
 
     fun setEditMode(editMode: Boolean) {
         _editMode.value = editMode

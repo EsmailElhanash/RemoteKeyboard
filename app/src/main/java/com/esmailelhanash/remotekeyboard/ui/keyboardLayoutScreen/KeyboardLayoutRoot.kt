@@ -1,36 +1,18 @@
 package com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.esmailelhanash.remotekeyboard.data.model.KeyboardButton
-import com.esmailelhanash.remotekeyboard.ui.EditAction
-import com.esmailelhanash.remotekeyboard.ui.EditViewModel
 import com.esmailelhanash.remotekeyboard.ui.LayoutsViewModel
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.addNewButtonDialog.AddNewButtonDialog
-import com.esmailelhanash.remotekeyboard.utils.editModeButton
 
 @Composable
 fun KeyboardLayoutRoot(viewModel: LayoutsViewModel) {
@@ -39,26 +21,22 @@ fun KeyboardLayoutRoot(viewModel: LayoutsViewModel) {
 
     // initiate EditViewModel in the scope of this composable
     val editViewModel : EditViewModel = viewModel()
-    val editAction = editViewModel.editAction.observeAsState()
-    editAction.value?.let {
-        when (it) {
+
+    editViewModel.editAction.observeAsState().let {
+        when (it.value) {
             EditAction.ADD_NEW_BUTTON -> {
                 AddNewButtonDialog(viewModel){
-                    editViewModel.setEditAction(
-                        EditAction.NULL
-                    )
+                    editViewModel.setEditAction(null)
                 }
             }
-            EditAction.DRAG -> {
-
-            }
-            EditAction.RESIZE -> {
-
-            }
-
-            EditAction.NULL -> {
-
-            }
+            EditAction.DRAG -> {}
+            EditAction.RESIZE -> {}
+            EditAction.RENAME -> {}
+            EditAction.CHANGE_ICON -> {}
+            EditAction.CHANGE_KEYSTROKE -> {}
+            EditAction.CHANGE_COLORS -> {}
+            EditAction.CHANGE_BG -> {}
+            null -> {}
         }
     }
 
@@ -70,13 +48,14 @@ fun KeyboardLayoutRoot(viewModel: LayoutsViewModel) {
             Box(modifier = Modifier.padding(innerPadding)) {
 
                 selectedLayout?.keyboardButtons?.forEach { button ->
-                    ButtonItem(button = button, editAction = editAction)
+                    ButtonItem(button = button, editViewModel = editViewModel){
+                        viewModel.saveEditedLayout()
+                    }
                 }
-
 
                 if (editMode == true){
                     EditButtonItem(
-                        editViewModel, layoutsViewModel = viewModel, editAction
+                        editViewModel
                     )
                 }
             }
@@ -84,78 +63,3 @@ fun KeyboardLayoutRoot(viewModel: LayoutsViewModel) {
     )
 }
 
-@Composable
-fun ButtonItem(button: KeyboardButton, editAction: State<EditAction?>) {
-
-    var maxOffset by remember { mutableStateOf(Offset(button.x.toFloat(), button.y.toFloat())) }
-    Box(
-        modifier = Modifier
-            .offset(x = maxOffset.x.dp, y = maxOffset.y.dp)
-            .size(width = button.width.dp, height = button.height.dp)
-            .background(color = button.backgroundColor, shape = MaterialTheme.shapes.medium)
-            .border(width = 1.dp, shape = MaterialTheme.shapes.medium, color = button.borderColor)
-            .pointerInput(Unit) {
-                if (editAction.value == EditAction.DRAG) {
-                    detectDragGestures { _, dragAmount ->
-                        maxOffset = maxOffset.plus(dragAmount.div(3.0F))
-                        button.x = maxOffset.x.toInt()
-                    }
-                }
-            },
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = button.name,
-            style = MaterialTheme.typography.bodyMedium,
-            color = button.textColor,
-            modifier = Modifier.padding(top = 8.dp)
-
-        )
-    }
-}
-
-@Composable
-private fun EditButtonItem(editViewModel: EditViewModel, layoutsViewModel: LayoutsViewModel, editAction: State<EditAction?>) {
-    val isEditActionInProgress = editViewModel.editAction.observeAsState().value != EditAction.NULL
-    val button = editModeButton
-    var maxOffset by remember { mutableStateOf(Offset(button.x.toFloat(), button.y.toFloat())) }
-    var showEditDialog by remember { mutableStateOf(false) }
-    Box(
-        modifier = Modifier
-            .offset(x = maxOffset.x.dp, y = maxOffset.y.dp)
-            .size(width = button.width.dp, height = button.height.dp)
-            .background(color = button.backgroundColor, shape = MaterialTheme.shapes.medium)
-            .border(width = 1.dp, shape = MaterialTheme.shapes.medium, color = button.borderColor)
-            .pointerInput(Unit) {
-                if (editAction.value == EditAction.DRAG) {
-                    detectDragGestures { _, dragAmount ->
-                        maxOffset = maxOffset.plus(dragAmount.div(3.0F))
-                        button.x = maxOffset.x.toInt()
-                    }
-                }
-            }.clickable {
-                if (isEditActionInProgress) {
-                    editViewModel.setEditAction(EditAction.NULL)
-                    // save
-                    layoutsViewModel.saveEditedLayout()
-                } else {
-                    showEditDialog = true
-                }
-
-
-            },
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = if (isEditActionInProgress) "Save" else button.name,
-            style = MaterialTheme.typography.bodyMedium,
-            color = button.textColor,
-            modifier = Modifier.padding(8.dp)
-        )
-    }
-
-    if (showEditDialog){
-        EditModeActionsDialog(editViewModel){
-            showEditDialog = it
-        }
-    }
-}
