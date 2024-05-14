@@ -25,18 +25,11 @@ class LayoutsViewModel @Inject constructor(
     val selectedLayout: LiveData<KeyboardLayout?> = _selectedLayout
 
 
-    private val _selectedButton = MutableLiveData<KeyboardButton>()
-    val selectedButton: LiveData<KeyboardButton> = _selectedButton
-
     private val _editMode = MutableLiveData<Boolean>()
     val editMode: LiveData<Boolean> = _editMode
 
     fun selectLayout(layout: KeyboardLayout) {
         _selectedLayout.value = layout
-    }
-
-    fun selectButton(button: KeyboardButton?) {
-        _selectedButton.value = button
     }
 
 
