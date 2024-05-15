@@ -51,7 +51,6 @@ class LayoutsViewModel @Inject constructor(
 
     // Example method to add a single layout to the list
     fun addLayout(layout: KeyboardLayout) {
-
         viewModelScope.launch {
             repository.insertKeyboardLayout(layout)
             val currentList = _layoutsLiveData.value ?: emptyList()
@@ -59,20 +58,11 @@ class LayoutsViewModel @Inject constructor(
         }
     }
 
-    fun saveEditedLayout() {
-        val currentSelectedLayout = _selectedLayout.value
-        if (currentSelectedLayout != null) {
-            viewModelScope.launch {
-                repository.updateKeyboardLayout(currentSelectedLayout)
-            }
-        }
-    }
-
     fun updateButtonInSelectedLayout(button: KeyboardButton) {
         val currentSelectedLayout = _selectedLayout.value
         if (currentSelectedLayout!= null) {
             val updatedButtons = currentSelectedLayout.keyboardButtons.map {
-                if (it.id == button.id) button else it
+                if (it == button) button else it
             }
 
             // Create a new instance of KeyboardLayout with the updated list of buttons

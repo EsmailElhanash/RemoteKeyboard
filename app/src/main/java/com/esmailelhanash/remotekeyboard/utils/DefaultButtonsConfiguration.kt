@@ -8,7 +8,6 @@ const val editButtonId = -1
 val editModeButton: KeyboardButton =
      KeyboardButton(
             layoutID = editButtonId,
-            id = -1,
             name = "Edit Layout",
             keystroke = "null",
             icon = "",

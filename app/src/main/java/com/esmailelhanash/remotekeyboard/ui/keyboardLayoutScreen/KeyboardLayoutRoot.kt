@@ -50,7 +50,6 @@ fun KeyboardLayoutRoot(layoutsViewModel: LayoutsViewModel) {
                 selectedLayout?.keyboardButtons?.forEach { button ->
                     ButtonItem(button = button, editViewModel = editViewModel){
                         layoutsViewModel.updateButtonInSelectedLayout(it)
-                        layoutsViewModel.saveEditedLayout()
                     }
                 }
 

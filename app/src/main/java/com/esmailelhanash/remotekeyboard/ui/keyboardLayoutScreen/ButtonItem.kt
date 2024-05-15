@@ -43,11 +43,19 @@ fun ButtonItem(button: KeyboardButton, editViewModel: EditViewModel, onEditConfi
             .pointerInput(Unit) {
                 if (editAction == EditAction.DRAG) {
                     Log.d(TAG, "ButtonItem: $button is in drag mode")
-                    detectDragGestures { _, dragAmount ->
+                    detectDragGestures(
+                        onDragEnd = {
+                            onEditConfirm(button.apply {
+                                this.x = maxOffset.x.toInt()
+                                this.y = maxOffset.y.toInt()
+                            })
+                        }
+                    ) { _, dragAmount ->
                         maxOffset = maxOffset.plus(dragAmount.div(3.0F))
                         button.x = maxOffset.x.toInt()
                         button.y = maxOffset.y.toInt()
                     }
+
                 }
             }.clickable {
                 editViewModel.setEditButton(button)

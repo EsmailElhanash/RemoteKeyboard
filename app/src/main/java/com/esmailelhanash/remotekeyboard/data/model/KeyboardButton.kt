@@ -4,7 +4,6 @@ import androidx.compose.ui.graphics.Color
 
 data class KeyboardButton(
     val layoutID : Int,
-    val id: Int,
     var name: String,
     val keystroke : String,
     val icon: String,

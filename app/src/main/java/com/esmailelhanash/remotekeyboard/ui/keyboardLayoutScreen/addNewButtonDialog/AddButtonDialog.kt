@@ -216,7 +216,6 @@ private fun confirm(
         layoutsViewModel.addButtonToSelectedLayout(
             KeyboardButton(
                 layoutID = selectedLayout.id,
-                id = 0,
                 name = addButtonViewModel.buttonName.text,
                 keystroke = addButtonViewModel.keyStroke.text,
                 icon = addButtonViewModel.selectedIcon.toString(),
