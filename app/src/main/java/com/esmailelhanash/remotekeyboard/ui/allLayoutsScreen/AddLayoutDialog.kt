@@ -29,6 +29,8 @@ import com.esmailelhanash.remotekeyboard.data.model.LayoutBackground
 import com.esmailelhanash.remotekeyboard.data.repository.KeyboardLayoutRepository
 import com.esmailelhanash.remotekeyboard.ui.LayoutsViewModel
 import com.esmailelhanash.remotekeyboard.ui.common.DialogRoot
+import com.esmailelhanash.remotekeyboard.ui.theme.Champagne
+import com.esmailelhanash.remotekeyboard.utils.defaultFont
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -83,9 +85,10 @@ fun AddLayoutDialog(
                                     name = textState.text,
                                     keyboardButtons = listOf(),
                                     background = LayoutBackground(
-                                        color = Color.Black,
+                                        color = Champagne,
                                         image = null
                                     ),
+                                    font = defaultFont.key
                                 )
                             )
 
@@ -114,7 +117,7 @@ fun AddLayoutDialogPreview() {
 
 // mock layouts viewmodel
 @Composable
-private fun mockLayoutsViewModel() =
+fun mockLayoutsViewModel() =
     LayoutsViewModel(mockKeyboardLayoutRepository())
 
 
@@ -127,18 +130,18 @@ private fun mockKeyboardLayoutRepository(): KeyboardLayoutRepository {
         }
 
         override suspend fun insertKeyboardLayout(keyboardLayout: KeyboardLayout) {
-            TODO("Not yet implemented")
+
         }
 
         override suspend fun updateKeyboardLayout(keyboardLayout: KeyboardLayout) {
-            TODO("Not yet implemented")
+
         }
 
         override suspend fun updateLayoutButtons(
             layout: KeyboardLayout,
             buttons: List<KeyboardButton>
         ) {
-            TODO("Not yet implemented")
+
         }
     }
 }

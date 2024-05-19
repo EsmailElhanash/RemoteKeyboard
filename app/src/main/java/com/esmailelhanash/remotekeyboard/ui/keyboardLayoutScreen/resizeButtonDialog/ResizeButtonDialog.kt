@@ -10,8 +10,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import com.esmailelhanash.remotekeyboard.data.model.KeyboardButton
 import com.esmailelhanash.remotekeyboard.ui.common.DialogRoot
-import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.addNewButtonDialog.ActionButtons
-import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.addNewButtonDialog.FormTextField
+import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.ActionButtons
+import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.FormTextField
 
 
 /**

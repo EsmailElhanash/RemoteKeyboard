@@ -1,4 +1,4 @@
-package com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.renameDialog
+package com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.changeKeyStrokeDialog
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
@@ -13,19 +13,19 @@ import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.ActionButtons
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.FormTextField
 
 @Composable
-fun RenameButtonDialog(
+fun ChangeKeystrokeDialog(
     button: KeyboardButton,
-    onConfirm: (newName: String) -> Unit,
+    onConfirm: (keystroke: String) -> Unit,
     onCancel: () -> Unit,
 ) {
-    var newName by remember { mutableStateOf(TextFieldValue()) }
+    var keystroke by remember { mutableStateOf(TextFieldValue()) }
     DialogRoot {
         Column {
             FormTextField(
-                label = "New name, old name: ${button.name}",
-                value = newName,
+                label = "New keystroke, old keystroke: ${button.keystroke}",
+                value = keystroke,
                 onValueChange = {
-                    newName = it
+                    keystroke = it
                 }
             )
             ActionButtons(
@@ -33,7 +33,7 @@ fun RenameButtonDialog(
                     onCancel()
                 },
                 onConfirm = {
-                    onConfirm(newName.text)
+                    onConfirm(keystroke.text)
                 }
             )
         }

@@ -33,3 +33,10 @@ val MIGRATION_1_2: Migration = object : Migration(1, 2) {
         db.execSQL("DROP TABLE keyboard_layout_old")
     }
 }
+
+val MIGRATION_2_3: Migration = object : Migration(2, 3) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+
+    }
+
+}

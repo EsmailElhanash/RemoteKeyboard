@@ -6,9 +6,11 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,9 +26,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import com.esmailelhanash.remotekeyboard.data.model.KeyboardButton
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.editActionsDialog.EditModeActionsDialog
-import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.renameDialog.RenameButtonDialog
-import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.resizeButtonDialog.ResizeButtonDialog
 import com.esmailelhanash.remotekeyboard.utils.editModeButton
+import com.esmailelhanash.remotekeyboard.utils.toIcon
 
 private const val TAG = "ButtonItem"
 
@@ -58,65 +59,35 @@ fun ButtonItem(button: KeyboardButton, editViewModel: EditViewModel, onEditConfi
 
                 }
             }.clickable {
-                editViewModel.setEditButton(button)
+                if (editViewModel.editAction.value != null)
+                    editViewModel.setEditButton(button)
             },
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = button.name,
-            style = MaterialTheme.typography.bodyMedium,
-            color = button.textColor,
-            modifier = Modifier.padding(top = 8.dp)
+        Column (
+            // center items horizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ){
+            button.iconName?.toIcon()?.let {
+                Icon(
+                    imageVector = it,
+                    contentDescription = button.name,
+                    tint = button.textColor,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+            Text(
+                text = button.name,
+                style = MaterialTheme.typography.bodyMedium,
+                color = button.textColor,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
 
-        )
     }
 
-    Dialogs( onEditConfirm = onEditConfirm, editViewModel )
 }
-@Composable
-private fun Dialogs(onEditConfirm: (KeyboardButton) -> Unit, editViewModel: EditViewModel) {
-   editViewModel.editButton.observeAsState().value?.let { button ->
-       when (editViewModel.editAction.value){
-           EditAction.RESIZE -> {
-               ResizeButtonDialog(
-                   button = button,
-                   onConfirm = { width, height ->
-                       onEditConfirm(button.apply {
-                           this.width = width
-                           this.height = height
-                       })
-                       editViewModel.setEditButton(null)
-                   },
-                   onCancel = {
-                       editViewModel.setEditButton(null)
-                   }
-               )
-           }
-           EditAction.RENAME -> {
-               RenameButtonDialog(
-                   button = button,
-                   onConfirm = { newName ->
-                       onEditConfirm(button.apply {
-                           this.name = newName
-                       })
-                       editViewModel.setEditButton(null)
-                   },
-                   onCancel = {
-                       editViewModel.setEditButton(null)
-                   }
-               )
-           }
-           EditAction.CHANGE_ICON -> TODO()
-           EditAction.CHANGE_KEYSTROKE -> TODO()
-           EditAction.CHANGE_COLORS -> TODO()
-           EditAction.CHANGE_BG -> TODO()
-           else -> {}
-       }
 
-
-   }
-
-}
 
 
 @Composable

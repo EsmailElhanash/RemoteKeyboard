@@ -1,51 +1,44 @@
 package com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.addNewButtonDialog
 
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Snackbar
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.esmailelhanash.remotekeyboard.data.model.KeyboardButton
 import com.esmailelhanash.remotekeyboard.data.model.KeyboardLayout
 import com.esmailelhanash.remotekeyboard.data.repository.KeyboardLayoutRepository
 import com.esmailelhanash.remotekeyboard.ui.LayoutsViewModel
 import com.esmailelhanash.remotekeyboard.ui.common.DialogRoot
+import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.ActionButtons
+import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.ColorSelectDialog
+import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.ColorSelectorRow
+import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.DialogTitle
+import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.FormTextField
+import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.IconSelectDialog
+import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.IconSelectorRow
 import com.esmailelhanash.remotekeyboard.ui.theme.BlackBean
 import com.esmailelhanash.remotekeyboard.ui.theme.Champagne
 import com.esmailelhanash.remotekeyboard.ui.theme.OldRose
 import com.esmailelhanash.remotekeyboard.utils.colorsList
 import com.esmailelhanash.remotekeyboard.utils.iconsList
+import com.esmailelhanash.remotekeyboard.utils.toName
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 
@@ -218,7 +211,7 @@ private fun confirm(
                 layoutID = selectedLayout.id,
                 name = addButtonViewModel.buttonName.text,
                 keystroke = addButtonViewModel.keyStroke.text,
-                icon = addButtonViewModel.selectedIcon.toString(),
+                iconName = addButtonViewModel.selectedIcon?.toName(),
                 x = 0,
                 y = 0,
                 width = addButtonViewModel.width.text.toInt(),
@@ -257,85 +250,22 @@ private fun mockKeyboardLayoutRepository(): KeyboardLayoutRepository {
         }
 
         override suspend fun updateKeyboardLayout(keyboardLayout: KeyboardLayout) {
-            // TODO("Not yet implemented")
+
         }
 
         override suspend fun updateLayoutButtons(
             layout: KeyboardLayout,
             buttons: List<KeyboardButton>
         ) {
-//            TODO("Not yet implemented")
+
         }
     }
 
 }
 
 
-@Composable
-private fun IconSelectDialog(onIconSelected: (ImageVector) -> Unit) {
-    Dialog(
-        onDismissRequest = {},
-        properties = DialogProperties(usePlatformDefaultWidth = false),
-        content = {
-            Surface(
-                shape = RoundedCornerShape(8.dp),
-                color = MaterialTheme.colorScheme.surface,
-                modifier = Modifier.fillMaxWidth(0.6F).fillMaxHeight(0.9F)
-            ) {
-                LazyVerticalGrid(
-                    columns = GridCells.Adaptive(80.dp),
-                    modifier = Modifier.padding(8.dp)
-                ) {
-                    items(iconsList.size) { index ->
-                        val icon = iconsList[index]
-                        Icon(
-                            imageVector = icon,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(48.dp)
-                                .clickable {
-                                    onIconSelected(icon)
-                                }
-                        )
-                    }
-                }
-            }
-        }
-    )
-}
 
-@Composable
-private fun ColorSelectDialog(onColorSelected: (Color) -> Unit) {
-    Dialog(
-        onDismissRequest = {},
-        properties = DialogProperties(usePlatformDefaultWidth = false),
-        content = {
-            Surface(
-                shape = RoundedCornerShape(8.dp),
-                color = MaterialTheme.colorScheme.surface,
-                modifier = Modifier.fillMaxWidth(0.6F).fillMaxHeight(0.9F)
-            ) {
-                LazyVerticalGrid(
-                    columns = GridCells.Adaptive(80.dp),
-                    modifier = Modifier.padding(8.dp)
-                ) {
-                    items(colorsList.size) { index ->
-                        val color = colorsList[index]
-                        Box(
-                            modifier = Modifier
-                                .padding(8.dp)
-                                .size(32.dp)
-                                .background(color)
-                                .clickable {
-                                    onColorSelected(color)
-                                }
-                        )
-                    }
-                }
-            }
-        }
-    )
-}
+
 
 @Preview
 @Composable

@@ -10,6 +10,5 @@ data class KeyboardLayout(
     @ColumnInfo(name = "name") val name: String,
     @ColumnInfo(name = "layout_buttons") val keyboardButtons: List<KeyboardButton>,
     @ColumnInfo(name = "background") val background: LayoutBackground?,
-//    @ColumnInfo(name = "icon") val icon: String?,
-//    @ColumnInfo(name = "font") val font: String?,
+    @ColumnInfo(name = "font") val font: String?,
 )

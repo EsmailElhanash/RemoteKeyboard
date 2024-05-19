@@ -141,8 +141,9 @@ import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material.icons.filled.Work
+import androidx.compose.ui.graphics.vector.ImageVector
 
-val iconNameMap = mapOf(
+private val iconNameMap = mapOf(
     Icons.Filled.Favorite to "Favorite",
     Icons.Filled.Home to "Home",
     Icons.Filled.Info to "Info",
@@ -284,6 +285,14 @@ val iconNameMap = mapOf(
     Icons.Filled.HdrStrong to "HdrStrong",
 )
 
-val nameIconMap = iconNameMap.entries.associate { (key, value) -> value to key }
+private val nameIconMap = iconNameMap.entries.associate { (key, value) -> value to key }
 
 val iconsList = iconNameMap.keys.toList()
+
+fun String.toIcon() : ImageVector? {
+    return nameIconMap[this]
+}
+
+fun ImageVector.toName() : String? {
+    return iconNameMap[this]
+}

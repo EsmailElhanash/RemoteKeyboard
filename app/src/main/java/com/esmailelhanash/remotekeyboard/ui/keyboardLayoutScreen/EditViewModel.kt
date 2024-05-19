@@ -12,18 +12,18 @@ class EditViewModel: ViewModel() {
     // a live data for a button being edited, most edit action are applicable to buttons
     // except for add new button, which is a special case
     // and change background, which applies to the whole keyboard layout
-    private var _editButton = MutableLiveData<KeyboardButton?>()
-    val editButton: LiveData<KeyboardButton?> = _editButton
+    private var _theButtonToEdit = MutableLiveData<KeyboardButton?>()
+    val theButtonToEdit: LiveData<KeyboardButton?> = _theButtonToEdit
 
-    fun setEditButton(editButton: KeyboardButton?) {
-        _editButton.value = editButton
+    fun setEditButton(selectedButtonToEdit: KeyboardButton?) {
+        _theButtonToEdit.value = selectedButtonToEdit
     }
     fun setEditAction(editAction: EditAction?) {
         _editAction.value = editAction
     }
 }
 enum class EditAction {
-    ADD_NEW_BUTTON ,DRAG, RESIZE, RENAME, CHANGE_ICON, CHANGE_KEYSTROKE, CHANGE_COLORS, CHANGE_BG
+    ADD_NEW_BUTTON ,DRAG, RESIZE, RENAME, CHANGE_ICON, CHANGE_KEYSTROKE, CHANGE_COLORS, CHANGE_BG, CHANGE_FONT
 }
 
 fun EditAction.getText(): String {
@@ -35,7 +35,8 @@ fun EditAction.getText(): String {
         EditAction.CHANGE_ICON -> "Change icon"
         EditAction.CHANGE_KEYSTROKE -> "Change keystroke"
         EditAction.CHANGE_COLORS -> "Change colors"
-        EditAction.CHANGE_BG -> "Change background"
+        EditAction.CHANGE_BG -> "Change Layout background"
+        EditAction.CHANGE_FONT -> "Change font"
     }
 }
 

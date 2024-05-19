@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.esmailelhanash.remotekeyboard.data.model.KeyboardButton
 import com.esmailelhanash.remotekeyboard.data.model.KeyboardLayout
+import com.esmailelhanash.remotekeyboard.data.model.LayoutBackground
 import com.esmailelhanash.remotekeyboard.data.repository.KeyboardLayoutRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -83,6 +84,50 @@ class LayoutsViewModel @Inject constructor(
             }
         }
     }
+
+    fun changeLayoutBackground(background: LayoutBackground) {
+        val currentSelectedLayout = _selectedLayout.value
+        if (currentSelectedLayout!= null) {
+            // Create a new instance of KeyboardLayout with the updated background
+            val updatedLayout = currentSelectedLayout.copy(background = background)
+
+            viewModelScope.launch {
+                // Update the layout in the repository
+                repository.updateKeyboardLayout(updatedLayout)
+
+                // Optionally, update the LiveData to reflect the change in the UI
+                _selectedLayout.postValue(updatedLayout)
+
+                // If you maintain a list of layouts, you might also need to update that
+                val updatedLayouts = _layoutsLiveData.value?.map {
+                    if (it.id == updatedLayout.id) updatedLayout else it
+                }?: listOf()
+                _layoutsLiveData.postValue(updatedLayouts)
+            }
+        }
+    }
+    fun changeLayoutFont(chosenFont: String?) {
+        val currentSelectedLayout = _selectedLayout.value
+        if (currentSelectedLayout!= null) {
+            // Create a new instance of KeyboardLayout with the updated background
+            val updatedLayout = currentSelectedLayout.copy(font = chosenFont)
+
+            viewModelScope.launch {
+                // Update the layout in the repository
+                repository.updateKeyboardLayout(updatedLayout)
+
+                // Optionally, update the LiveData to reflect the change in the UI
+                _selectedLayout.postValue(updatedLayout)
+
+                // If you maintain a list of layouts, you might also need to update that
+                val updatedLayouts = _layoutsLiveData.value?.map {
+                    if (it.id == updatedLayout.id) updatedLayout else it
+                }?: listOf()
+                _layoutsLiveData.postValue(updatedLayouts)
+            }
+        }
+    }
+
     fun addButtonToSelectedLayout(button: KeyboardButton) {
         val currentSelectedLayout = _selectedLayout.value
         if (currentSelectedLayout != null) {
@@ -115,4 +160,6 @@ class LayoutsViewModel @Inject constructor(
             _layoutsLiveData.value = repository.getKeyboardLayouts()
         }
     }
+
+
 }

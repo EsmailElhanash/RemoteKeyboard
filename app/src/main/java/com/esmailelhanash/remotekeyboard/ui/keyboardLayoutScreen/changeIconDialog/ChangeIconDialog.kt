@@ -9,8 +9,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.esmailelhanash.remotekeyboard.data.model.KeyboardButton
 import com.esmailelhanash.remotekeyboard.ui.common.DialogRoot
-import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.addNewButtonDialog.ActionButtons
-import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.addNewButtonDialog.IconSelectorRow
+import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.ActionButtons
+import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.IconSelectDialog
+import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.IconSelectorRow
+import com.esmailelhanash.remotekeyboard.utils.toIcon
+import com.esmailelhanash.remotekeyboard.utils.toName
 
 @Composable
 fun ChangeIconDialog(
@@ -18,12 +21,12 @@ fun ChangeIconDialog(
     onConfirm: (newIcon: ImageVector) -> Unit,
     onCancel: () -> Unit,
 ) {
-    var newIcon by remember { mutableStateOf(button.icon) }
+    var newIcon by remember { mutableStateOf(button.iconName) }
     var showIconsDialog by remember { mutableStateOf(false) }
     DialogRoot {
         Column {
             IconSelectorRow(
-                selectedIcon = /*newIcon*/ null,
+                selectedIcon = newIcon?.toIcon(),
                 onIconClick = {
                     showIconsDialog = true
                 }
@@ -34,13 +37,23 @@ fun ChangeIconDialog(
                     onCancel()
                 },
                 onConfirm = {
-//                    onConfirm(newIcon)
+                    newIcon?.toIcon()?.let {
+                        onConfirm(
+                            it
+                        )
+                    }
                 }
             )
         }
-
-
-
+    }
+    if (showIconsDialog){
+        IconSelectDialog(
+            onIconSelected = {
+                newIcon = it.toName()
+                showIconsDialog = false
+            }
+        )
     }
 
 }
+

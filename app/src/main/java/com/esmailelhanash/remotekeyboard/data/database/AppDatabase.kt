@@ -9,7 +9,7 @@ import com.esmailelhanash.remotekeyboard.data.typeConverters.KeyboardButtonTypeC
 import com.esmailelhanash.remotekeyboard.data.typeConverters.LayoutBackgroundTypeConverter
 
 
-@Database(entities = [KeyboardLayout::class], version = 2, exportSchema = true)
+@Database(entities = [KeyboardLayout::class], version = 3, exportSchema = true)
 @TypeConverters(KeyboardButtonTypeConverter::class, LayoutBackgroundTypeConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun keyboardLayoutDao(): KeyboardLayoutDao
