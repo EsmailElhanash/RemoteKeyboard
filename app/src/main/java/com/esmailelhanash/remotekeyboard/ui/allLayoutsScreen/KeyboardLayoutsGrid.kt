@@ -24,6 +24,8 @@ import androidx.navigation.NavHostController
 import com.esmailelhanash.remotekeyboard.R
 import com.esmailelhanash.remotekeyboard.data.model.KeyboardLayout
 import com.esmailelhanash.remotekeyboard.ui.KeyboardLayoutScreen
+import com.esmailelhanash.remotekeyboard.utils.defaultFont
+import com.esmailelhanash.remotekeyboard.utils.toFontFamily
 
 @Composable
 fun KeyboardLayoutsGrid(
@@ -76,7 +78,7 @@ private fun KeyboardLayoutItem(
         Text(
             text = layout.name,
             style = TextStyle(
-//                fontFamily = OswaldRegular,
+                fontFamily = layout.font.toFontFamily ?: defaultFont.value,
                 fontWeight = FontWeight.Normal,
                 fontSize = 16.sp
             )

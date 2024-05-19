@@ -2,10 +2,12 @@ package com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.chooseLayoutFo
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -42,7 +44,8 @@ fun ChooseLayoutFontDialog(
             fontsMap.forEach {
                 FontSelectorRow(
                     font = it,
-                    onFontClick = {
+                    isChecked = it.key == chosenFont,
+                    onFontChoose = {
                         chosenFont = it.key
                     }
                 )
@@ -60,14 +63,21 @@ fun ChooseLayoutFontDialog(
     }
 }
 @Composable
-fun FontSelectorRow(font: Map.Entry<String, FontFamily>, onFontClick: () -> Unit) {
-    Text(
-        text = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789",
-        fontFamily = font.value,
-        modifier = Modifier.padding(
-            16.dp
-        ).clickable { onFontClick() }
-    )
+fun FontSelectorRow(font: Map.Entry<String,FontFamily>, isChecked: Boolean, onFontChoose: () -> Unit) {
+    Row {
+        Checkbox(isChecked, onCheckedChange = {
+            onFontChoose()
+        })
+        Text(
+            text = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789",
+            fontFamily = font.value,
+            modifier = Modifier.padding(
+                16.dp
+            ).clickable {
+                onFontChoose()
+            }
+        )
+    }
 }
 
 

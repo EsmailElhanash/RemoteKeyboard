@@ -21,8 +21,6 @@ import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.editDialogs.Edi
 import com.esmailelhanash.remotekeyboard.ui.theme.Champagne
 
 
-private const val TAG = "KeyboardLayoutRoot"
-
 @Composable
 fun KeyboardLayoutRoot(layoutsViewModel: LayoutsViewModel) {
     val selectedLayout by layoutsViewModel.selectedLayout.observeAsState()
@@ -79,7 +77,7 @@ fun KeyboardLayoutRoot(layoutsViewModel: LayoutsViewModel) {
                 }
 
                 selectedLayout?.keyboardButtons?.forEach { button ->
-                    ButtonItem(button = button, editViewModel = editViewModel){
+                    ButtonItem(button = button, layoutsViewModel = layoutsViewModel, editViewModel = editViewModel){
                         layoutsViewModel.updateButtonInSelectedLayout(it)
                     }
                 }

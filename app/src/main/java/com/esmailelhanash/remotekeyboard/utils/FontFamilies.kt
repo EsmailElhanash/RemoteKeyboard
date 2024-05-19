@@ -68,3 +68,6 @@ val fontsMap = mapOf(
 )
 
 val defaultFont =  fontsMap.entries.first()
+
+val String?.toFontFamily: FontFamily?
+    get() = fontsMap[this]

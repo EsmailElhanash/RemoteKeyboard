@@ -23,16 +23,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.esmailelhanash.remotekeyboard.data.model.KeyboardButton
+import com.esmailelhanash.remotekeyboard.ui.LayoutsViewModel
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.editActionsDialog.EditModeActionsDialog
+import com.esmailelhanash.remotekeyboard.utils.defaultFont
 import com.esmailelhanash.remotekeyboard.utils.editModeButton
+import com.esmailelhanash.remotekeyboard.utils.toFontFamily
 import com.esmailelhanash.remotekeyboard.utils.toIcon
+
 
 private const val TAG = "ButtonItem"
 
 @Composable
-fun ButtonItem(button: KeyboardButton, editViewModel: EditViewModel, onEditConfirm: (KeyboardButton) -> Unit) {
+fun ButtonItem(button: KeyboardButton
+               , editViewModel: EditViewModel
+               , layoutsViewModel: LayoutsViewModel
+               ,onEditConfirm: (KeyboardButton) -> Unit) {
     val editAction by editViewModel.editAction.observeAsState()
     var maxOffset by remember { mutableStateOf(Offset(button.x.toFloat(), button.y.toFloat())) }
     Box(
@@ -78,7 +88,11 @@ fun ButtonItem(button: KeyboardButton, editViewModel: EditViewModel, onEditConfi
             }
             Text(
                 text = button.name,
-                style = MaterialTheme.typography.bodyMedium,
+                style = TextStyle(
+                fontFamily = layoutsViewModel.selectedLayout.value?.font?.toFontFamily ?: defaultFont.value,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 16.sp
+                ),
                 color = button.textColor,
                 modifier = Modifier.padding(top = 8.dp)
             )
