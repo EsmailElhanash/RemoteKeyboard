@@ -14,6 +14,4 @@ data class KeyboardButton(
     var backgroundColor: Color,
     var borderColor: Color,
     var textColor: Color,
-    // todo shadow, as a function of the button color
-
 )

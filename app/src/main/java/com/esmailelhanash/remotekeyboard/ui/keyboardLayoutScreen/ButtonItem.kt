@@ -35,7 +35,6 @@ import com.esmailelhanash.remotekeyboard.utils.editModeButton
 import com.esmailelhanash.remotekeyboard.utils.toFontFamily
 import com.esmailelhanash.remotekeyboard.utils.toIcon
 
-
 private const val TAG = "ButtonItem"
 
 @Composable
@@ -45,12 +44,33 @@ fun ButtonItem(button: KeyboardButton
                ,onEditConfirm: (KeyboardButton) -> Unit) {
     val editAction by editViewModel.editAction.observeAsState()
     var maxOffset by remember { mutableStateOf(Offset(button.x.toFloat(), button.y.toFloat())) }
+
+
+    Box(
+        modifier = Modifier
+            .size(width = button.width.dp + 8.dp, height = button.height.dp + 8.dp)
+            .offset((-4).dp + maxOffset.x.dp, (-4).dp + maxOffset.y.dp) // Adjust the offset to control the shadow's direction
+            .background(color = button.backgroundColor.copy(alpha = 0.1f), shape = MaterialTheme.shapes.medium) // Customize the shadow color and opacity
+/*.background(
+                brush = Brush.radialGradient(
+                    colors = listOf(
+                        button.backgroundColor.copy(alpha = 0.5f), // Shadow color at the center
+                        button.backgroundColor.copy(alpha = 0.0f) // Transparent towards the edges
+                    ),
+                    center = Offset.Zero,
+                    radius = button.width.dp.value / 2, // Adjust the radius for the size of the button
+                    tileMode = TileMode.Clamp
+                ),
+                shape = MaterialTheme.shapes.medium
+            )*/
+    )
+
     Box(
         modifier = Modifier
             .offset(x = maxOffset.x.dp, y = maxOffset.y.dp)
             .size(width = button.width.dp, height = button.height.dp)
-            .background(color = button.backgroundColor, shape = MaterialTheme.shapes.medium)
             .border(width = 1.dp, shape = MaterialTheme.shapes.medium, color = button.borderColor)
+            .background(color = button.backgroundColor, shape = MaterialTheme.shapes.medium)
             .pointerInput(Unit) {
                 if (editAction == EditAction.DRAG) {
                     Log.d(TAG, "ButtonItem: $button is in drag mode")
@@ -74,6 +94,7 @@ fun ButtonItem(button: KeyboardButton
             },
         contentAlignment = Alignment.Center
     ) {
+
         Column (
             // center items horizontally
             horizontalAlignment = Alignment.CenterHorizontally,
