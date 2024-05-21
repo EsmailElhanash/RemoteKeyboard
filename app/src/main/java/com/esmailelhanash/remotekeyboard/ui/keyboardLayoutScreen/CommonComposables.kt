@@ -1,5 +1,6 @@
 package com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -46,6 +47,8 @@ import com.esmailelhanash.remotekeyboard.ui.theme.Champagne
 import com.esmailelhanash.remotekeyboard.utils.colorsList
 import com.esmailelhanash.remotekeyboard.utils.iconsList
 
+
+private const val TAG =  "CommonComposable"
 @Composable
 fun DialogTitle(text: String) {
     Text(
@@ -120,9 +123,17 @@ fun ImageSelectorRow(selectedImagePath: String?, prompt: String, clearSelectedIm
         )
 
         if (selectedImagePath != null) {
+            val imageUri = "file://$selectedImagePath"
             // Display the selected image
             Image(
-                painter = rememberImagePainter(data = selectedImagePath),
+                painter = rememberImagePainter(imageUri){
+                     listener(
+                             onError = { request, throwable ->
+                                 Log.d(TAG, "Error loading image: $throwable")
+                             }
+                         )
+
+                },
                 contentDescription = "Selected Image",
                 modifier = Modifier.size(32.dp),
                 contentScale = ContentScale.Crop

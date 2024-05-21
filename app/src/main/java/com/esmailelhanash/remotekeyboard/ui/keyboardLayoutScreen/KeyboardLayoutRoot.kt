@@ -19,7 +19,10 @@ import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.changeLayoutBac
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.chooseLayoutFontDialog.ChooseLayoutFontDialog
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.editDialogs.EditDialogs
 import com.esmailelhanash.remotekeyboard.ui.theme.Champagne
+import com.esmailelhanash.remotekeyboard.utils.editModeButton
 
+
+private const val TAG = "KeyboardLayoutRoot"
 
 @Composable
 fun KeyboardLayoutRoot(layoutsViewModel: LayoutsViewModel) {
@@ -67,25 +70,29 @@ fun KeyboardLayoutRoot(layoutsViewModel: LayoutsViewModel) {
                     )
             ) {
                 selectedLayout?.background?.image?.let { imagePath ->
+                    val imageUri = "file://$imagePath"
                     Image(
-                        painter = rememberImagePainter(imagePath),
+                        painter = rememberImagePainter(imageUri),
                         contentDescription = null,
                         modifier = Modifier.fillMaxSize(), // Make the image fill the Box
                         contentScale = ContentScale.Crop ,// Adjust the scaling of the image
-
                     )
                 }
 
                 selectedLayout?.keyboardButtons?.forEach { button ->
+
+
                     ButtonItem(button = button, layoutsViewModel = layoutsViewModel, editViewModel = editViewModel){
                         layoutsViewModel.updateButtonInSelectedLayout(it)
                     }
-                }
+                    if (button == editModeButton) {
+                        if (editMode == true){
+                            EditButtonItem(
+                                editViewModel
+                            )
+                        }
+                    }
 
-                if (editMode == true){
-                    EditButtonItem(
-                        editViewModel
-                    )
                 }
             }
             if (editAction != null && theButtonToEdit != null) {

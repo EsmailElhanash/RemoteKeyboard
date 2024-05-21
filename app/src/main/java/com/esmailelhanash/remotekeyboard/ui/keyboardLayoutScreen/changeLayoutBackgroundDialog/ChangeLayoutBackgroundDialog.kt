@@ -3,7 +3,6 @@ package com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.changeLayoutBa
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -15,7 +14,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import com.esmailelhanash.remotekeyboard.data.getBitmapFromFile
 import com.esmailelhanash.remotekeyboard.data.model.LayoutBackground
 import com.esmailelhanash.remotekeyboard.data.saveImageToInternalStorage
 import com.esmailelhanash.remotekeyboard.ui.LayoutsViewModel
@@ -44,9 +42,6 @@ fun ChangeLayoutBackgroundDialog(layoutsViewModel: LayoutsViewModel, dismiss: ()
         layoutsViewModel.selectedLayout.value?.background?.image
     ) }
 
-
-    var selectedBackgroundImageBitmap : Bitmap? by remember { mutableStateOf(null)}
-
     // Initialize the launcher at the top level of your composable function
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -58,11 +53,9 @@ fun ChangeLayoutBackgroundDialog(layoutsViewModel: LayoutsViewModel, dismiss: ()
                 CoroutineScope(Dispatchers.IO).launch {
                     saveImageLocally(context, imagePath) {
                         selectedBackgroundImagePath = it
-                        selectedBackgroundImageBitmap = getBitmapFromFile(imagePath.toString())
                     }
                 }
             }
-//            selectedBackgroundImagePath = imagePath.toString()
             startImagePicker = false
 
 

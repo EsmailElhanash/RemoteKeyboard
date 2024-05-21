@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.offset
@@ -51,18 +52,6 @@ fun ButtonItem(button: KeyboardButton
             .size(width = button.width.dp + 8.dp, height = button.height.dp + 8.dp)
             .offset((-4).dp + maxOffset.x.dp, (-4).dp + maxOffset.y.dp) // Adjust the offset to control the shadow's direction
             .background(color = button.backgroundColor.copy(alpha = 0.1f), shape = MaterialTheme.shapes.medium) // Customize the shadow color and opacity
-/*.background(
-                brush = Brush.radialGradient(
-                    colors = listOf(
-                        button.backgroundColor.copy(alpha = 0.5f), // Shadow color at the center
-                        button.backgroundColor.copy(alpha = 0.0f) // Transparent towards the edges
-                    ),
-                    center = Offset.Zero,
-                    radius = button.width.dp.value / 2, // Adjust the radius for the size of the button
-                    tileMode = TileMode.Clamp
-                ),
-                shape = MaterialTheme.shapes.medium
-            )*/
     )
 
     Box(
@@ -131,6 +120,14 @@ fun EditButtonItem(editViewModel: EditViewModel) {
     val editAction by editViewModel.editAction.observeAsState()
     var maxOffset by remember { mutableStateOf(Offset(button.x.toFloat(), button.y.toFloat())) }
     var showEditDialog by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = Modifier
+            .size(width = button.width.dp + 8.dp, height = button.height.dp + 8.dp)
+            .offset((-4).dp + maxOffset.x.dp, (-4).dp + maxOffset.y.dp) // Adjust the offset to control the shadow's direction
+            .background(color = button.backgroundColor.copy(alpha = 0.1f), shape = MaterialTheme.shapes.medium) // Customize the shadow color and opacity
+    )
+
     Box(
         modifier = Modifier
             .offset(x = maxOffset.x.dp, y = maxOffset.y.dp)
@@ -145,14 +142,13 @@ fun EditButtonItem(editViewModel: EditViewModel) {
                         button.y = maxOffset.y.toInt()
                     }
                 }
-            }.clickable {
-                if (editAction != null) {
-                    editViewModel.setEditAction(null)
-                } else {
-                    showEditDialog = true
+                detectTapGestures {
+                    if (editAction != null) {
+                        editViewModel.setEditAction(null)
+                    } else {
+                        showEditDialog = true
+                    }
                 }
-
-
             },
         contentAlignment = Alignment.Center
     ) {
