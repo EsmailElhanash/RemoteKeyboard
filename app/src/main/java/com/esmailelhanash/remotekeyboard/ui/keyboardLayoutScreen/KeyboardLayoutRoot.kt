@@ -19,7 +19,6 @@ import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.changeLayoutBac
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.chooseLayoutFontDialog.ChooseLayoutFontDialog
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.editDialogs.EditDialogs
 import com.esmailelhanash.remotekeyboard.ui.theme.Champagne
-import com.esmailelhanash.remotekeyboard.utils.editModeButton
 
 
 private const val TAG = "KeyboardLayoutRoot"
@@ -80,19 +79,15 @@ fun KeyboardLayoutRoot(layoutsViewModel: LayoutsViewModel) {
                 }
 
                 selectedLayout?.keyboardButtons?.forEach { button ->
-
-
                     ButtonItem(button = button, layoutsViewModel = layoutsViewModel, editViewModel = editViewModel){
                         layoutsViewModel.updateButtonInSelectedLayout(it)
                     }
-                    if (button == editModeButton) {
-                        if (editMode == true){
-                            EditButtonItem(
-                                editViewModel
-                            )
-                        }
-                    }
+                }
 
+                if (editMode == true){
+                    EditButtonItem(
+                        editViewModel
+                    )
                 }
             }
             if (editAction != null && theButtonToEdit != null) {

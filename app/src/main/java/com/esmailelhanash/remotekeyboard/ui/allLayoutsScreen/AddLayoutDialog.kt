@@ -31,6 +31,7 @@ import com.esmailelhanash.remotekeyboard.ui.LayoutsViewModel
 import com.esmailelhanash.remotekeyboard.ui.common.DialogRoot
 import com.esmailelhanash.remotekeyboard.ui.theme.Champagne
 import com.esmailelhanash.remotekeyboard.utils.defaultFont
+import com.esmailelhanash.remotekeyboard.utils.editModeButton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.offset
@@ -135,19 +134,18 @@ fun EditButtonItem(editViewModel: EditViewModel) {
             .background(color = button.backgroundColor, shape = MaterialTheme.shapes.medium)
             .border(width = 1.dp, shape = MaterialTheme.shapes.medium, color = button.borderColor)
             .pointerInput(Unit) {
-                if (editAction == EditAction.DRAG) {
-                    detectDragGestures { _, dragAmount ->
+                detectDragGestures { _, dragAmount ->
+                    if (editAction == EditAction.DRAG) {
                         maxOffset = maxOffset.plus(dragAmount.div(3.0F))
                         button.x = maxOffset.x.toInt()
                         button.y = maxOffset.y.toInt()
                     }
                 }
-                detectTapGestures {
-                    if (editAction != null) {
-                        editViewModel.setEditAction(null)
-                    } else {
-                        showEditDialog = true
-                    }
+            }.clickable {
+                if (editAction != null) {
+                    editViewModel.setEditAction(null)
+                } else {
+                    showEditDialog = true
                 }
             },
         contentAlignment = Alignment.Center
