@@ -6,6 +6,7 @@ import com.esmailelhanash.remotekeyboard.data.model.KeyboardButton
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.EditAction
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.EditViewModel
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.changeColorsDialog.ChangeColorsDialog
+import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.changeFontSizeDialog.ChangeFontSizeDialog
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.changeIconDialog.ChangeIconDialog
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.changeKeyStrokeDialog.ChangeKeystrokeDialog
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.renameDialog.RenameButtonDialog
@@ -83,6 +84,22 @@ fun EditDialogs(onEditConfirm: (KeyboardButton) -> Unit, editViewModel: EditView
                                 this.backgroundColor = it.backgroundColor
                                 this.textColor = it.textColor
                                 this.borderColor = it.borderColor
+                            }
+                        )
+                    },
+                    onCancel = {
+                        editViewModel.setEditButton(null)
+                    }
+                )
+            }
+            EditAction.CHANGE_FONT_SIZE -> {
+                ChangeFontSizeDialog(
+                    button = button,
+                    onConfirm = {
+                        editViewModel.setEditButton(null)
+                        onEditConfirm(
+                            button.apply {
+                                this.fontSize = it
                             }
                         )
                     },

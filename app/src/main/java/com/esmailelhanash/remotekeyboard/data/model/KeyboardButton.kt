@@ -14,4 +14,5 @@ data class KeyboardButton(
     var backgroundColor: Color,
     var borderColor: Color,
     var textColor: Color,
+    var fontSize: Int?,
 )

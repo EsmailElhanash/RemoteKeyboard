@@ -24,6 +24,7 @@ class EditViewModel: ViewModel() {
 }
 enum class EditAction {
     ADD_NEW_BUTTON ,DRAG, RESIZE, RENAME, CHANGE_ICON, CHANGE_KEYSTROKE, CHANGE_COLORS, CHANGE_BG, CHANGE_FONT
+    ,CHANGE_FONT_SIZE, CHANGE_SHADOW
 }
 
 fun EditAction.getText(): String {
@@ -37,6 +38,8 @@ fun EditAction.getText(): String {
         EditAction.CHANGE_COLORS -> "Change colors"
         EditAction.CHANGE_BG -> "Change Layout background"
         EditAction.CHANGE_FONT -> "Change font"
+        EditAction.CHANGE_FONT_SIZE -> "Change font size"
+        EditAction.CHANGE_SHADOW -> "Change Shadow"
     }
 }
 

@@ -45,11 +45,13 @@ fun ButtonItem(button: KeyboardButton
     val editAction by editViewModel.editAction.observeAsState()
     var maxOffset by remember { mutableStateOf(Offset(button.x.toFloat(), button.y.toFloat())) }
 
+    val shadow = layoutsViewModel.selectedLayout.value?.shadow?.dp ?: 8.dp
+    val halfShadow = (shadow / 2 * -1)
 
     Box(
         modifier = Modifier
-            .size(width = button.width.dp + 8.dp, height = button.height.dp + 8.dp)
-            .offset((-4).dp + maxOffset.x.dp, (-4).dp + maxOffset.y.dp) // Adjust the offset to control the shadow's direction
+            .size(width = button.width.dp + shadow, height = button.height.dp + shadow)
+            .offset((halfShadow) + maxOffset.x.dp, halfShadow + maxOffset.y.dp) // Adjust the offset to control the shadow's direction
             .background(color = button.backgroundColor.copy(alpha = 0.1f), shape = MaterialTheme.shapes.medium) // Customize the shadow color and opacity
     )
 
@@ -98,9 +100,9 @@ fun ButtonItem(button: KeyboardButton
             Text(
                 text = button.name,
                 style = TextStyle(
-                fontFamily = layoutsViewModel.selectedLayout.value?.font?.toFontFamily ?: defaultFont.value,
+                    fontFamily = layoutsViewModel.selectedLayout.value?.font?.toFontFamily ?: defaultFont.value,
                     fontWeight = FontWeight.Normal,
-                    fontSize = 16.sp
+                    fontSize = button.fontSize?.sp ?: 16.sp
                 ),
                 color = button.textColor,
                 modifier = Modifier.padding(top = 8.dp)
@@ -114,16 +116,19 @@ fun ButtonItem(button: KeyboardButton
 
 
 @Composable
-fun EditButtonItem(editViewModel: EditViewModel) {
+fun EditButtonItem(editViewModel: EditViewModel, layoutsViewModel: LayoutsViewModel) {
     val button = editModeButton
     val editAction by editViewModel.editAction.observeAsState()
     var maxOffset by remember { mutableStateOf(Offset(button.x.toFloat(), button.y.toFloat())) }
     var showEditDialog by remember { mutableStateOf(false) }
 
+    val shadow = layoutsViewModel.selectedLayout.value?.shadow?.dp ?: 8.dp
+    val halfShadow = (shadow / 2 * -1)
+
     Box(
         modifier = Modifier
-            .size(width = button.width.dp + 8.dp, height = button.height.dp + 8.dp)
-            .offset((-4).dp + maxOffset.x.dp, (-4).dp + maxOffset.y.dp) // Adjust the offset to control the shadow's direction
+            .size(width = button.width.dp + shadow, height = button.height.dp + shadow)
+            .offset((halfShadow) + maxOffset.x.dp, halfShadow + maxOffset.y.dp) // Adjust the offset to control the shadow's direction
             .background(color = button.backgroundColor.copy(alpha = 0.1f), shape = MaterialTheme.shapes.medium) // Customize the shadow color and opacity
     )
 

@@ -219,6 +219,7 @@ private fun confirm(
                 backgroundColor = addButtonViewModel.selectedBGColor ?: Champagne,
                 borderColor = addButtonViewModel.selectedBorderColor ?: OldRose,
                 textColor = addButtonViewModel.selectedTextColor ?: BlackBean,
+                fontSize = 16
             )
         )
         // dismiss the dialog:

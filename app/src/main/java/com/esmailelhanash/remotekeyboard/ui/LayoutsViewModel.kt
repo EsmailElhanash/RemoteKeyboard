@@ -85,6 +85,28 @@ class LayoutsViewModel @Inject constructor(
         }
     }
 
+    fun changeLayoutShadow(shadow: Int) {
+        val currentSelectedLayout = _selectedLayout.value
+        if (currentSelectedLayout!= null) {
+            // Create a new instance of KeyboardLayout with the updated background
+            val updatedLayout = currentSelectedLayout.copy(shadow = shadow)
+
+            viewModelScope.launch {
+                // Update the layout in the repository
+                repository.updateKeyboardLayout(updatedLayout)
+
+                // Optionally, update the LiveData to reflect the change in the UI
+                _selectedLayout.postValue(updatedLayout)
+
+                // If you maintain a list of layouts, you might also need to update that
+                val updatedLayouts = _layoutsLiveData.value?.map {
+                    if (it.id == updatedLayout.id) updatedLayout else it
+                }?: listOf()
+                _layoutsLiveData.postValue(updatedLayouts)
+            }
+        }
+    }
+
     fun changeLayoutBackground(background: LayoutBackground) {
         val currentSelectedLayout = _selectedLayout.value
         if (currentSelectedLayout!= null) {

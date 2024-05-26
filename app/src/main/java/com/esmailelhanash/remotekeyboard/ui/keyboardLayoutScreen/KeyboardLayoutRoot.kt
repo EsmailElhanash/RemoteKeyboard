@@ -16,12 +16,10 @@ import coil.compose.rememberImagePainter
 import com.esmailelhanash.remotekeyboard.ui.LayoutsViewModel
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.addNewButtonDialog.AddNewButtonDialog
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.changeLayoutBackgroundDialog.ChangeLayoutBackgroundDialog
-import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.chooseLayoutFontDialog.ChooseLayoutFontDialog
+import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.changeShadowDialog.ChangeShadowDialog
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.editDialogs.EditDialogs
 import com.esmailelhanash.remotekeyboard.ui.theme.Champagne
 
-
-private const val TAG = "KeyboardLayoutRoot"
 
 @Composable
 fun KeyboardLayoutRoot(layoutsViewModel: LayoutsViewModel) {
@@ -50,9 +48,12 @@ fun KeyboardLayoutRoot(layoutsViewModel: LayoutsViewModel) {
                     editViewModel.setEditAction(null)
                 }
             }
-            EditAction.CHANGE_FONT -> ChooseLayoutFontDialog(
-                layoutsViewModel = layoutsViewModel){
-                editViewModel.setEditAction(null)
+            EditAction.CHANGE_FONT -> {}
+            EditAction.CHANGE_FONT_SIZE -> {}
+            EditAction.CHANGE_SHADOW -> {
+                ChangeShadowDialog(layoutsViewModel){
+                    editViewModel.setEditAction(null)
+                }
             }
             null -> {}
         }
@@ -86,7 +87,7 @@ fun KeyboardLayoutRoot(layoutsViewModel: LayoutsViewModel) {
 
                 if (editMode == true){
                     EditButtonItem(
-                        editViewModel
+                        editViewModel, layoutsViewModel
                     )
                 }
             }

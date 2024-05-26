@@ -17,7 +17,8 @@ val editModeButton: KeyboardButton =
             height = 70,
             backgroundColor = Color.LightGray, // Placeholder value for color
             borderColor = Color.Black, // Placeholder value for borderColor
-            textColor = Color.Black // Placeholder value for textColor
+            textColor = Color.Black, // Placeholder value for textColor
+            fontSize = 18, // Placeholder value for fontSize
         )
 
 
