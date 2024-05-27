@@ -54,8 +54,7 @@ class LayoutsViewModel @Inject constructor(
     fun addLayout(layout: KeyboardLayout) {
         viewModelScope.launch {
             repository.insertKeyboardLayout(layout)
-            val currentList = _layoutsLiveData.value ?: emptyList()
-            _layoutsLiveData.postValue(currentList + layout)
+            fetchKeyboardLayouts()
         }
     }
 
