@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,11 +49,13 @@ fun ButtonItem(button: KeyboardButton
                , editViewModel: EditViewModel
                , layoutsViewModel: LayoutsViewModel
                ,onEditConfirm: (KeyboardButton) -> Unit) {
-    // create instance of ButtonItemViewModel passing KeyboardButton as parameter
+
     val buttonItemViewModel = ButtonItemViewModelFactory(
         buttonItem = button,
         editViewModel = editViewModel,
     ).create(ButtonItemViewModel::class.java)
+
+
 
     ButtonShadow(buttonItemViewModel, layoutsViewModel)
     ButtonContent(buttonItemViewModel, onEditConfirm, editViewModel, layoutsViewModel)
@@ -66,24 +69,29 @@ private fun ButtonContent(
     layoutsViewModel: LayoutsViewModel
 ) {
     buttonItemViewModel.apply {
+        // Directly access the state variables
+        val offset by rememberUpdatedState(offset)
+        val size by rememberUpdatedState(size)
+        val button by rememberUpdatedState(button)
+
         Box(
             modifier = Modifier
-                .offset(x = buttonItemViewModel.offset.x.dp, y = buttonItemViewModel.offset.y.dp)
+                .offset(x = offset.x.dp, y = offset.y.dp)
                 .size(
-                    width = buttonItemViewModel.size.width.dp,
-                    height = buttonItemViewModel.size.height.dp
+                    width = size.width.dp,
+                    height = size.height.dp
                 )
                 .border(width = 1.dp, shape = MaterialTheme.shapes.medium, color = button.borderColor)
                 .background(color = button.backgroundColor, shape = MaterialTheme.shapes.medium)
                 .pointerInput(Unit) {
                     Log.d(TAG, "ButtonItem: $button is in drag mode")
                     detectDragGestures(
-                        onDragStart = onDragStart(buttonItemViewModel),
-                        onDrag = onDrag(buttonItemViewModel),
+                        onDragStart = onDragStart(this@apply),
+                        onDrag = onDrag(this@apply),
                         onDragEnd = {
                             onEditConfirm(button.apply {
-                                this.x = buttonItemViewModel.offset.x.toInt()
-                                this.y = buttonItemViewModel.offset.y.toInt()
+                                this.x = offset.x.toInt()
+                                this.y = offset.y.toInt()
                             })
                         }
                     )
@@ -93,14 +101,14 @@ private fun ButtonContent(
                 },
             contentAlignment = Alignment.Center
         ) {
-            Content(button, layoutsViewModel)
+            VisibleContent(button, layoutsViewModel)
         }
     }
 
 }
 
 @Composable
-private fun Content(
+private fun VisibleContent(
     button: KeyboardButton,
     layoutsViewModel: LayoutsViewModel
 ) {
@@ -130,15 +138,17 @@ private fun Content(
     }
 }
 
+
 private fun onDrag(
     buttonItemViewModel: ButtonItemViewModel
 ) : (change: PointerInputChange, dragAmount: Offset) -> Unit = { _, dragAmount ->
         buttonItemViewModel.apply {
+
             if (editAction == EditAction.DRAG) {
                 Log.d(TAG, "onDrag: ")
-                offset = offset.plus(dragAmount.div(3.0F))
-                buttonItemViewModel.button.x = offset.x.toInt()
-                buttonItemViewModel.button.y = offset.y.toInt()
+                this.offset = offset.plus(dragAmount.div(3.0F))
+                button.x = offset.x.toInt()
+                button.y = offset.y.toInt()
             }
 
             if (editAction == EditAction.RESIZE && dragStartCorner != null) {
@@ -150,8 +160,8 @@ private fun onDrag(
                         val newWidth = size.width - myDragAmount.x.toInt()
                         val newHeight = size.height - myDragAmount.y.toInt()
                         if (newWidth > 10 && newHeight > 10) {
-                            offset = offset.plus(Offset(myDragAmount.x, myDragAmount.y))
-                            size = IntSize(newWidth, newHeight)
+                            this.offset = offset.plus(Offset(myDragAmount.x, myDragAmount.y))
+                            this.size = IntSize(newWidth, newHeight)
                         }
                     }
 
@@ -159,8 +169,8 @@ private fun onDrag(
                         val newWidth = size.width + myDragAmount.x.toInt()
                         val newHeight = size.height - myDragAmount.y.toInt()
                         if (newWidth > 10 && newHeight > 10) {
-                            offset = offset.plus(Offset(0f, myDragAmount.y))
-                            size = IntSize(newWidth, newHeight)
+                            this.offset = offset.plus(Offset(0f, myDragAmount.y))
+                            this.size = IntSize(newWidth, newHeight)
                         }
                     }
 
@@ -168,8 +178,8 @@ private fun onDrag(
                         val newWidth = size.width - myDragAmount.x.toInt()
                         val newHeight = size.height + myDragAmount.y.toInt()
                         if (newWidth > 10 && newHeight > 10) {
-                            offset = offset.plus(Offset(myDragAmount.x, 0f))
-                            size = IntSize(newWidth, newHeight)
+                            this.offset = offset.plus(Offset(myDragAmount.x, 0f))
+                            this.size = IntSize(newWidth, newHeight)
                         }
                     }
 
@@ -178,14 +188,14 @@ private fun onDrag(
                         val newHeight = size.height + myDragAmount.y.toInt()
                         if (newWidth > 10 && newHeight > 10) {
                             // No need to change maxOffset for bottom right drag
-                            size = IntSize(newWidth, newHeight)
+                            this.size = IntSize(newWidth, newHeight)
                         }
                     }
 
                     null -> {}
                 }
-                buttonItemViewModel.button.width = size.width
-                buttonItemViewModel.button.height = size.height
+                button.width = size.width
+                button.height = size.height
             }
         }
 
@@ -193,40 +203,67 @@ private fun onDrag(
 
 private fun PointerInputScope.onDragStart(buttonItemViewModel: ButtonItemViewModel): (Offset) -> Unit =
     {
-        if (buttonItemViewModel.editAction == EditAction.RESIZE) {
-            val dragStartPosition = it
-            // Calculate the distance of the drag start point from each corner
-            val topLeftDistance = distance(dragStartPosition, Offset(buttonItemViewModel.position.x,buttonItemViewModel. position.y))
-            val topRightDistance =
-                distance(dragStartPosition, Offset(buttonItemViewModel.position.x + size.width.dp.toPx(), buttonItemViewModel.position.y))
-            val bottomLeftDistance =
-                distance(dragStartPosition, Offset(buttonItemViewModel.position.x, buttonItemViewModel.position.y + size.height.dp.toPx()))
-            val bottomRightDistance = distance(
-                dragStartPosition,
-                Offset(buttonItemViewModel.position.x + size.width.dp.toPx(), buttonItemViewModel.position.y + size.height.dp.toPx())
-            )
 
-            // log all distances
-            Log.d("CornersDistances", "ButtonItem: topLeftDistance: $topLeftDistance")
-            Log.d("CornersDistances", "ButtonItem: topRightDistance: $topRightDistance")
-            Log.d("CornersDistances", "ButtonItem: bottomLeftDistance: $bottomLeftDistance")
-            Log.d("CornersDistances", "ButtonItem: bottomRightDistance: $bottomRightDistance")
+        buttonItemViewModel.apply{
+            if (editAction == EditAction.RESIZE) {
+                val dragStartPosition = it
+                // Calculate the distance of the drag start point from each corner
+                val topLeftDistance = distance(
+                    dragStartPosition,
+                    Offset(position.x, position.y)
+                )
+                val topRightDistance =
+                    distance(
+                        dragStartPosition,
+                        Offset(
+                            position.x + size.width.dp.toPx(),
+                            position.y
+                        )
+                    )
+                val bottomLeftDistance =
+                    distance(
+                        dragStartPosition,
+                        Offset(
+                            position.x,
+                            position.y + size.height.dp.toPx()
+                        )
+                    )
+                val bottomRightDistance = distance(
+                    dragStartPosition,
+                    Offset(
+                        position.x + size.width.dp.toPx(),
+                        position.y + size.height.dp.toPx()
+                    )
+                )
+
+                // log all distances
+                Log.d("CornersDistances", "ButtonItem: topLeftDistance: $topLeftDistance")
+                Log.d("CornersDistances", "ButtonItem: topRightDistance: $topRightDistance")
+                Log.d("CornersDistances", "ButtonItem: bottomLeftDistance: $bottomLeftDistance")
+                Log.d("CornersDistances", "ButtonItem: bottomRightDistance: $bottomRightDistance")
 
 
-            // Determine the closest corner
-            val minDistance = listOf(
-                topLeftDistance,
-                topRightDistance,
-                bottomLeftDistance,
-                bottomRightDistance
-            ).minOrNull()
+                // Determine the closest corner
+                val minDistance = listOf(
+                    topLeftDistance,
+                    topRightDistance,
+                    bottomLeftDistance,
+                    bottomRightDistance
+                ).minOrNull()
 
-            when (minDistance) {
-                topLeftDistance -> buttonItemViewModel.dragStartCorner = DragStartCorner.TOP_LEFT
-                topRightDistance -> buttonItemViewModel.dragStartCorner = DragStartCorner.TOP_RIGHT
-                bottomLeftDistance -> buttonItemViewModel.dragStartCorner = DragStartCorner.BOTTOM_LEFT
-                bottomRightDistance -> buttonItemViewModel.dragStartCorner =
-                    DragStartCorner.BOTTOM_RIGHT
+                when (minDistance) {
+                    topLeftDistance -> dragStartCorner =
+                        DragStartCorner.TOP_LEFT
+
+                    topRightDistance -> dragStartCorner =
+                        DragStartCorner.TOP_RIGHT
+
+                    bottomLeftDistance -> dragStartCorner =
+                        DragStartCorner.BOTTOM_LEFT
+
+                    bottomRightDistance -> dragStartCorner =
+                        DragStartCorner.BOTTOM_RIGHT
+                }
             }
         }
 
@@ -238,20 +275,25 @@ private fun ButtonShadow(
     buttonItemViewModel: ButtonItemViewModel,
     layoutsViewModel: LayoutsViewModel
 ) {
-    val shadow = layoutsViewModel.selectedLayout.value?.shadow?.dp ?: 8.dp
-    val halfShadow = (shadow / 2 * -1)
-    Box(
-        modifier = Modifier
-            .size(width = buttonItemViewModel.size.width.dp + shadow, height = buttonItemViewModel.size.height.dp + shadow)
-            .offset(
-                (halfShadow) + buttonItemViewModel.offset.x.dp,
-                halfShadow + buttonItemViewModel.offset.y.dp
-            ) // Adjust the offset to control the shadow's direction
-            .background(
-                color = buttonItemViewModel.button.backgroundColor.copy(alpha = 0.1f),
-                shape = MaterialTheme.shapes.medium
-            ) // Customize the shadow color and opacity
-    )
+    buttonItemViewModel.apply{
+        val shadow = layoutsViewModel.selectedLayout.value?.shadow?.dp ?: 8.dp
+        val halfShadow = (shadow / 2 * -1)
+        Box(
+            modifier = Modifier
+                .size(
+                    width = size.width.dp + shadow,
+                    height = size.height.dp + shadow
+                )
+                .offset(
+                    (halfShadow) + offset.x.dp,
+                    halfShadow + offset.y.dp
+                ) // Adjust the offset to control the shadow's direction
+                .background(
+                    color = button.backgroundColor.copy(alpha = 0.1f),
+                    shape = MaterialTheme.shapes.medium
+                ) // Customize the shadow color and opacity
+        )
+    }
 }
 
 @Composable

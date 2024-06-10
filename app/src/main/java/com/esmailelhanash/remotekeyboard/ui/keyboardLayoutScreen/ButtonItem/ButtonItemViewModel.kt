@@ -11,15 +11,16 @@ import com.esmailelhanash.remotekeyboard.data.model.KeyboardButton
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.EditAction
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.EditViewModel
 
-class ButtonItemViewModel(var button : KeyboardButton,
-    editViewModel: EditViewModel) : ViewModel() {
-    var editAction : EditAction? = null
+class ButtonItemViewModel(var button : KeyboardButton, editViewModel: EditViewModel) : ViewModel() {
 
+
+
+    var editAction : EditAction? = null
 
     var offset by mutableStateOf(Offset(button.x.toFloat(), button.y.toFloat()))
 
-
     var size by mutableStateOf(IntSize(button.width, button.height))
+
     val position by mutableStateOf(Offset(button.x.toFloat(), button.y.toFloat()))
 
     var dragStartCorner : DragStartCorner? by mutableStateOf(null)
