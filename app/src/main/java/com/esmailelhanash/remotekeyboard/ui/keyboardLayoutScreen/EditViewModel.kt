@@ -1,5 +1,6 @@
 package com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen
 
+import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

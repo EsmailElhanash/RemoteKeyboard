@@ -22,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -34,6 +35,7 @@ import com.esmailelhanash.remotekeyboard.utils.defaultFont
 import com.esmailelhanash.remotekeyboard.utils.editModeButton
 import com.esmailelhanash.remotekeyboard.utils.toFontFamily
 import com.esmailelhanash.remotekeyboard.utils.toIcon
+import kotlin.math.sqrt
 
 private const val TAG = "ButtonItem"
 
@@ -43,7 +45,7 @@ fun ButtonItem(button: KeyboardButton
                , layoutsViewModel: LayoutsViewModel
                ,onEditConfirm: (KeyboardButton) -> Unit) {
     val editAction by editViewModel.editAction.observeAsState()
-    var maxOffset by remember { mutableStateOf(Offset(button.x.toFloat(), button.y.toFloat())) }
+    var maxOffset by remember { mutableStateOf(Offset(button.x.dp.value, button.y.dp.value)) }
 
     val shadow = layoutsViewModel.selectedLayout.value?.shadow?.dp ?: 8.dp
     val halfShadow = (shadow / 2 * -1)
@@ -62,22 +64,27 @@ fun ButtonItem(button: KeyboardButton
             .border(width = 1.dp, shape = MaterialTheme.shapes.medium, color = button.borderColor)
             .background(color = button.backgroundColor, shape = MaterialTheme.shapes.medium)
             .pointerInput(Unit) {
-                if (editAction == EditAction.DRAG) {
-                    Log.d(TAG, "ButtonItem: $button is in drag mode")
-                    detectDragGestures(
-                        onDragEnd = {
-                            onEditConfirm(button.apply {
-                                this.x = maxOffset.x.toInt()
-                                this.y = maxOffset.y.toInt()
-                            })
-                        }
-                    ) { _, dragAmount ->
+
+                if (editAction != EditAction.DRAG){
+                    return@pointerInput
+                }
+                detectDragGestures(
+                    onDragStart = {
+
+                    },
+                    onDrag = { change, dragAmount ->
                         maxOffset = maxOffset.plus(dragAmount.div(3.0F))
                         button.x = maxOffset.x.toInt()
                         button.y = maxOffset.y.toInt()
-                    }
 
-                }
+                    },
+                    onDragEnd = {
+                        onEditConfirm(button.apply {
+                            this.x = maxOffset.x.toInt()
+                            this.y = maxOffset.y.toInt()
+                        })
+                    }
+                )
             }.clickable {
                 if (editViewModel.editAction.value != null)
                     editViewModel.setEditButton(button)
@@ -167,4 +174,86 @@ fun EditButtonItem(editViewModel: EditViewModel, layoutsViewModel: LayoutsViewMo
             showEditDialog = it
         }
     }
+}
+private fun PointerInputScope.detectDragStartCorner(button: KeyboardButton
+                                                    , dragStartPosition : Offset){
+    // Calculate the distance of the drag start point from each corner
+    val topLeftDistance = distance(
+        Offset(
+            dragStartPosition.x,
+            dragStartPosition.y
+        ),
+        Offset(button.x.toFloat(), button.y.toFloat())
+    )
+    val topRightDistance = distance(
+            Offset(
+                dragStartPosition.x,
+                dragStartPosition.y
+            ),
+            Offset(
+                button.x + size.width.dp.toPx(),
+                button.y.toFloat()
+            )
+        )
+    val bottomLeftDistance = distance(
+            Offset(
+                dragStartPosition.x,
+                dragStartPosition.y
+            ),
+            Offset(
+                button.x.toFloat(),
+                button.y + size.height.dp.toPx()
+            )
+        )
+    val bottomRightDistance = distance(
+        Offset(
+            dragStartPosition.x,
+            dragStartPosition.y
+        ),
+        Offset(
+            button.x + size.width.dp.toPx(),
+            button.y + size.height.dp.toPx()
+        )
+    )
+
+    // log all distances
+    Log.d("CornersDistances", "ButtonItem: topLeftDistance: $topLeftDistance")
+    Log.d("CornersDistances", "ButtonItem: topRightDistance: $topRightDistance")
+    Log.d("CornersDistances", "ButtonItem: bottomLeftDistance: $bottomLeftDistance")
+    Log.d("CornersDistances", "ButtonItem: bottomRightDistance: $bottomRightDistance")
+
+
+    // Determine the closest corner
+    val minDistance = listOf(
+        topLeftDistance,
+        topRightDistance,
+        bottomLeftDistance,
+        bottomRightDistance
+    ).minOrNull()
+
+    Log.d("CornersDistances", "ButtonItem: minDistance: $minDistance")
+
+//    when (minDistance) {
+//        topLeftDistance -> updateDragStartCorner(
+//            DragStartCorner.TOP_LEFT
+//        )
+//
+//        topRightDistance -> updateDragStartCorner(
+//            DragStartCorner.TOP_RIGHT
+//        )
+//
+//        bottomLeftDistance -> updateDragStartCorner(
+//            DragStartCorner.BOTTOM_LEFT
+//        )
+//
+//        bottomRightDistance -> updateDragStartCorner(
+//            DragStartCorner.BOTTOM_RIGHT
+//        )
+//    }
+}
+
+private fun distance(point1: Offset, point2: Offset): Float {
+    val dx = point2.x - point1.x
+    val dy = point2.y - point1.y
+    return sqrt(dx * dx + dy * dy)
 }

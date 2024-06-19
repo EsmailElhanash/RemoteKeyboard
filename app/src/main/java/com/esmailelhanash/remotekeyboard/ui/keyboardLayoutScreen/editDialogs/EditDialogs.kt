@@ -10,28 +10,12 @@ import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.changeFontSizeD
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.changeIconDialog.ChangeIconDialog
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.changeKeyStrokeDialog.ChangeKeystrokeDialog
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.renameDialog.RenameButtonDialog
-import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.resizeButtonDialog.ResizeButtonDialog
 import com.esmailelhanash.remotekeyboard.utils.toName
 
 @Composable
 fun EditDialogs(onEditConfirm: (KeyboardButton) -> Unit, editViewModel: EditViewModel) {
     editViewModel.theButtonToEdit.observeAsState().value?.let { button ->
         when (editViewModel.editAction.value){
-            EditAction.RESIZE -> {
-                ResizeButtonDialog(
-                    button = button,
-                    onConfirm = { width, height ->
-                        editViewModel.setEditButton(null)
-                        onEditConfirm(button.apply {
-                            this.width = width
-                            this.height = height
-                        })
-                    },
-                    onCancel = {
-                        editViewModel.setEditButton(null)
-                    }
-                )
-            }
             EditAction.RENAME -> {
                 RenameButtonDialog(
                     button = button,
