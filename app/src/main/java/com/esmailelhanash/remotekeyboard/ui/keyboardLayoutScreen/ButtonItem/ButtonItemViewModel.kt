@@ -1,44 +1,28 @@
 package com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.ButtonItem
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.unit.IntSize
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.esmailelhanash.remotekeyboard.data.model.KeyboardButton
-import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.EditAction
-import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.EditViewModel
 
-class ButtonItemViewModel(var button : KeyboardButton, editViewModel: EditViewModel) : ViewModel() {
+class ButtonItemViewModel(button: KeyboardButton) : ViewModel() {
 
+    private val _buttonItem = MutableLiveData(button)
+    val buttonItem: LiveData<KeyboardButton> = _buttonItem
 
-
-    var editAction : EditAction? = null
-
-    var offset by mutableStateOf(Offset(button.x.toFloat(), button.y.toFloat()))
-
-    var size by mutableStateOf(IntSize(button.width, button.height))
-
-    val position by mutableStateOf(Offset(button.x.toFloat(), button.y.toFloat()))
-
-    var dragStartCorner : DragStartCorner? by mutableStateOf(null)
-
-    init {
-        editViewModel.editAction.observeForever {
-            editAction = it
-        }
+    // a function to update the button item
+    fun updateButton(newButton: KeyboardButton) {
+        _buttonItem.value = newButton
     }
 }
 
 
-class ButtonItemViewModelFactory(private val buttonItem: KeyboardButton,
-    private val editViewModel: EditViewModel) : ViewModelProvider.Factory {
+class ButtonItemViewModelFactory(private val buttonItem: KeyboardButton) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ButtonItemViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return ButtonItemViewModel(buttonItem, editViewModel ) as T
+            return ButtonItemViewModel(buttonItem) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

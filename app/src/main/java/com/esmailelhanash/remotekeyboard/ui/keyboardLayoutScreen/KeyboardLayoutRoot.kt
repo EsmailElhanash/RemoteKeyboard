@@ -32,34 +32,7 @@ fun KeyboardLayoutRoot(layoutsViewModel: LayoutsViewModel) {
     val editViewModel : EditViewModel = viewModel()
     val theButtonToEdit by editViewModel.theButtonToEdit.observeAsState()
     val editAction by editViewModel.editAction.observeAsState()
-    editViewModel.editAction.observeAsState().let {
-        when (it.value) {
-            EditAction.ADD_NEW_BUTTON -> {
-                AddNewButtonDialog(layoutsViewModel){
-                    editViewModel.setEditAction(null)
-                }
-            }
-            EditAction.DRAG -> {}
-            EditAction.RESIZE -> {}
-            EditAction.RENAME -> {}
-            EditAction.CHANGE_ICON -> {}
-            EditAction.CHANGE_KEYSTROKE -> {}
-            EditAction.CHANGE_COLORS -> {}
-            EditAction.CHANGE_BG -> {
-                ChangeLayoutBackgroundDialog(layoutsViewModel){
-                    editViewModel.setEditAction(null)
-                }
-            }
-            EditAction.CHANGE_FONT -> {}
-            EditAction.CHANGE_FONT_SIZE -> {}
-            EditAction.CHANGE_SHADOW -> {
-                ChangeShadowDialog(layoutsViewModel){
-                    editViewModel.setEditAction(null)
-                }
-            }
-            null -> {}
-        }
-    }
+    observeEditAction(editViewModel, layoutsViewModel)
 
     Scaffold(
         modifier = Modifier
@@ -82,14 +55,14 @@ fun KeyboardLayoutRoot(layoutsViewModel: LayoutsViewModel) {
                 }
 
                 selectedLayout?.keyboardButtons?.forEach { button ->
-                    ButtonItem(button = button, layoutsViewModel = layoutsViewModel, editViewModel = editViewModel){
+                    ButtonItem(button = button, selectedLayout = selectedLayout!!, editViewModel = editViewModel){
                         layoutsViewModel.updateButtonInSelectedLayout(it)
                     }
                 }
 
                 if (editMode == true){
                     EditButtonItem(
-                        editViewModel, layoutsViewModel
+                        editViewModel, selectedLayout?.shadow
                     )
                 }
             }
@@ -100,5 +73,42 @@ fun KeyboardLayoutRoot(layoutsViewModel: LayoutsViewModel) {
             }
         }
     )
+}
+@Composable
+private fun observeEditAction(
+    editViewModel: EditViewModel,
+    layoutsViewModel: LayoutsViewModel
+) {
+    editViewModel.editAction.observeAsState().let {
+        when (it.value) {
+            EditAction.ADD_NEW_BUTTON -> {
+                AddNewButtonDialog(layoutsViewModel) {
+                    editViewModel.setEditAction(null)
+                }
+            }
+
+            EditAction.DRAG -> {}
+            EditAction.RESIZE -> {}
+            EditAction.RENAME -> {}
+            EditAction.CHANGE_ICON -> {}
+            EditAction.CHANGE_KEYSTROKE -> {}
+            EditAction.CHANGE_COLORS -> {}
+            EditAction.CHANGE_BG -> {
+                ChangeLayoutBackgroundDialog(layoutsViewModel) {
+                    editViewModel.setEditAction(null)
+                }
+            }
+
+            EditAction.CHANGE_FONT -> {}
+            EditAction.CHANGE_FONT_SIZE -> {}
+            EditAction.CHANGE_SHADOW -> {
+                ChangeShadowDialog(layoutsViewModel) {
+                    editViewModel.setEditAction(null)
+                }
+            }
+
+            null -> {}
+        }
+    }
 }
 
