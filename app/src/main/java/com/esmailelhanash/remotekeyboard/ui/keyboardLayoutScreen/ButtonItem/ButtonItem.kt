@@ -63,36 +63,37 @@ private fun ButtonRoot(
     editViewModel: EditViewModel,
     keyboardLayout: KeyboardLayout
 ) {
-    val editAction by editViewModel.editAction.observeAsState()
-    buttonItemViewModel.apply {
-        val nullableButton by buttonItem.observeAsState()
-
-        nullableButton?.let { button ->
-            Box(
-                modifier = Modifier
-                    .offset(x = button.x.dp, y = button.y.dp)
-                    .size(
-                        width = button.width.dp ,
-                        height = button.height.dp
+    val b by buttonItemViewModel.buttonItem.observeAsState()
+    b?.let{ button ->
+        Box(
+            modifier = Modifier
+                .offset(x = button.x.dp, y = button.y.dp)
+                .size(
+                    width = button.width.dp,
+                    height = button.height.dp
+                )
+                .border(
+                    width = 1.dp,
+                    shape = MaterialTheme.shapes.medium,
+                    color = button.borderColor
+                )
+                .background(color = button.backgroundColor, shape = MaterialTheme.shapes.medium)
+                .pointerInput(
+                    key1 = Unit,
+                    block = pointerInputHandler(
+                        confirmEdits,
+                        button,
+                        buttonItemViewModel::updateButton,
+                        editViewModel.editAction
                     )
-                    .border(width = 1.dp, shape = MaterialTheme.shapes.medium, color = button.borderColor)
-                    .background(color = button.backgroundColor, shape = MaterialTheme.shapes.medium)
-                    .pointerInput(
-                        key1 = Unit,
-                        block = pointerInputHandler(confirmEdits,
-                            button,
-                            ::updateButton,
-                            editAction
-                        )
-                    )
-                    .clickable {
-                        if (editViewModel.editAction.value != null)
-                            editViewModel.setEditButton(button)
-                    },
-                contentAlignment = Alignment.Center
-            ) {
-                 VisibleContent(button, keyboardLayout)
-            }
+                )
+                .clickable {
+                    if (editViewModel.editAction.value != null)
+                        editViewModel.setEditButton(button)
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            VisibleContent(button, keyboardLayout)
         }
     }
 

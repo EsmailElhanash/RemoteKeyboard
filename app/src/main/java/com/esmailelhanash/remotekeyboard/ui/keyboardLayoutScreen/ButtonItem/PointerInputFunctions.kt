@@ -7,6 +7,7 @@ import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.LiveData
 import com.esmailelhanash.remotekeyboard.data.model.KeyboardButton
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.EditAction
 import kotlin.math.sqrt
@@ -19,39 +20,39 @@ fun pointerInputHandler(
     confirmEdits: (KeyboardButton) -> Unit,
     button: KeyboardButton,
     liveUpdateButton: (KeyboardButton) -> Unit,
-    editAction: EditAction?
+    editAction: LiveData<EditAction?>
 ): suspend PointerInputScope.() -> Unit = {
 
     detectDragGestures(
         onDragStart = onDragStart(button,editAction),
         onDrag = onDrag(button,editAction,liveUpdateButton),
-        onDragEnd = onDragEnd(button,confirmEdits)
+        onDragEnd = onDragEnd(button,editAction,confirmEdits)
     )
     
 }
 
 
-private fun PointerInputScope.onDragStart(button: KeyboardButton,editAction: EditAction?): (Offset) -> Unit =
+private fun PointerInputScope.onDragStart(button: KeyboardButton,editAction: LiveData<EditAction?>): (Offset) -> Unit =
     {
-        if (editAction == EditAction.RESIZE) {
+        if (editAction.value == EditAction.RESIZE) {
             detectDragStartCorner(button,it)
         }
     }
 
 private fun onDrag(
     button: KeyboardButton,
-    editAction: EditAction?,
+    editAction: LiveData<EditAction?>,
     liveUpdateButton: (KeyboardButton) -> Unit
 ) : (change: PointerInputChange, dragAmount: Offset) -> Unit = { _, dragAmount ->
-    if (editAction == EditAction.DRAG) {
+    if (editAction.value == EditAction.DRAG) {
         liveUpdateButton(
             button.apply{
-                x += dragAmount.x.toInt()
-                y += dragAmount.y.toInt()
+                x += dragAmount.div(3.0F).x.toInt()
+                y += dragAmount.div(3.0F).y.toInt()
             }
         )
     }
-    if (editAction == EditAction.RESIZE && dragStartCorner != null) {
+    if (editAction.value == EditAction.RESIZE && dragStartCorner != null) {
         val size = IntSize(
             button.width, button.height
         )
@@ -62,12 +63,15 @@ private fun onDrag(
 
 private fun onDragEnd(
     button: KeyboardButton,
+    editAction: LiveData<EditAction?>,
     confirmEdits: (KeyboardButton) -> Unit
 ): () -> Unit = {
-    confirmEdits(button.apply {
-        this.x = button.x
-        this.y = button.y
-    })
+    if (editAction.value == EditAction.DRAG){
+        confirmEdits(button.apply {
+            this.x = button.x
+            this.y = button.y
+        })
+    }
 }
 
 private fun handleDragToResize(

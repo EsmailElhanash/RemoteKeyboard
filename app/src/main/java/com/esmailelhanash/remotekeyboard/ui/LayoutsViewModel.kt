@@ -58,6 +58,7 @@ class LayoutsViewModel @Inject constructor(
         }
     }
 
+
     fun updateButtonInSelectedLayout(button: KeyboardButton) {
         val currentSelectedLayout = _selectedLayout.value
         if (currentSelectedLayout!= null) {
