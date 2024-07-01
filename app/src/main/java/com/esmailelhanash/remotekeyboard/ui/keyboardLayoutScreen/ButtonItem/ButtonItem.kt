@@ -46,55 +46,56 @@ fun ButtonItem(button: KeyboardButton
                , selectedLayout: KeyboardLayout
                , onEditConfirm: (KeyboardButton) -> Unit) {
 
-    val buttonItemViewModel = ButtonItemViewModelFactory(
-        buttonItem = button,
-    ).create(ButtonItemViewModel::class.java)
 
 
+    // button state and a function to update it
+    var mButton by remember { mutableStateOf(button) }
+    fun updateButton(button: KeyboardButton) {
+        mButton = button
+    }
 
-    ButtonShadow(buttonItemViewModel, selectedLayout)
-    ButtonRoot(buttonItemViewModel, onEditConfirm, editViewModel, selectedLayout)
-
+    Box{
+        ButtonShadow(mButton, selectedLayout)
+        ButtonRoot(mButton, ::updateButton, onEditConfirm, editViewModel, selectedLayout)
+    }
 }
 @Composable
 private fun ButtonRoot(
-    buttonItemViewModel: ButtonItemViewModel,
+    button: KeyboardButton,
+    updateButtonState : (KeyboardButton) -> Unit,
     confirmEdits: (KeyboardButton) -> Unit,
     editViewModel: EditViewModel,
     keyboardLayout: KeyboardLayout
 ) {
-    val b by buttonItemViewModel.buttonItem.observeAsState()
-    b?.let{ button ->
-        Box(
-            modifier = Modifier
-                .offset(x = button.x.dp, y = button.y.dp)
-                .size(
-                    width = button.width.dp,
-                    height = button.height.dp
+    Box(
+        modifier = Modifier
+            .offset(x = button.x.dp, y = button.y.dp)
+            .size(
+                width = button.width.dp,
+                height = button.height.dp
+            )
+            .border(
+                width = 1.dp,
+                shape = MaterialTheme.shapes.medium,
+                color = button.borderColor
+            )
+            .background(color = button.backgroundColor, shape = MaterialTheme.shapes.medium)
+            .pointerInput(
+                key1 = Unit,
+                block = pointerInputHandler(
+                    confirmEdits,
+                    button,
+                    updateButtonState,
+                    editViewModel.editAction
                 )
-                .border(
-                    width = 1.dp,
-                    shape = MaterialTheme.shapes.medium,
-                    color = button.borderColor
-                )
-                .background(color = button.backgroundColor, shape = MaterialTheme.shapes.medium)
-                .pointerInput(
-                    key1 = Unit,
-                    block = pointerInputHandler(
-                        confirmEdits,
-                        button,
-                        buttonItemViewModel::updateButton,
-                        editViewModel.editAction
-                    )
-                )
-                .clickable {
-                    if (editViewModel.editAction.value != null)
-                        editViewModel.setEditButton(button)
-                },
-            contentAlignment = Alignment.Center
-        ) {
-            VisibleContent(button, keyboardLayout)
-        }
+            )
+            .clickable {
+                if (editViewModel.editAction.value != null)
+                    editViewModel.setEditButton(button)
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        VisibleContent(button, keyboardLayout)
     }
 
 }
@@ -134,36 +135,34 @@ private fun VisibleContent(
 
 @Composable
 private fun ButtonShadow(
-    buttonItemViewModel: ButtonItemViewModel,
+    button: KeyboardButton,
     selectedLayout: KeyboardLayout
 ) {
-    buttonItemViewModel.apply {
-        val button = buttonItem.observeAsState().value!!
-        val offset = Offset(
-            button.x.toFloat(), button.y.toFloat()
-        )
-        val size = IntSize(
-            width = button.width,
-            height = button.height
-        )
-        val shadow = selectedLayout.shadow?.dp ?: 8.dp
-        val halfShadow = (shadow / 2 * -1)
-        Box(
-            modifier = Modifier
-                .size(
-                    width = size.width.dp + shadow,
-                    height = size.height.dp + shadow
-                )
-                .offset(
-                    (halfShadow) + offset.x.dp,
-                    halfShadow + offset.y.dp
-                ) // Adjust the offset to control the shadow's direction
-                .background(
-                    color = button.backgroundColor.copy(alpha = 0.1f),
-                    shape = MaterialTheme.shapes.medium
-                ) // Customize the shadow color and opacity
-        )
-    }
+    val offset = Offset(
+        button.x.toFloat(), button.y.toFloat()
+    )
+    val size = IntSize(
+        width = button.width,
+        height = button.height
+    )
+    val shadow = selectedLayout.shadow?.dp ?: 8.dp
+    val halfShadow = (shadow / 2 * -1)
+    Box(
+        modifier = Modifier
+            .size(
+                width = size.width.dp + shadow,
+                height = size.height.dp + shadow
+            )
+            .offset(
+                (halfShadow) + offset.x.dp,
+                halfShadow + offset.y.dp
+            ) // Adjust the offset to control the shadow's direction
+            .background(
+                color = button.backgroundColor.copy(alpha = 0.1f),
+                shape = MaterialTheme.shapes.medium
+            ) // Customize the shadow color and opacity
+    )
+
 }
 
 @Composable

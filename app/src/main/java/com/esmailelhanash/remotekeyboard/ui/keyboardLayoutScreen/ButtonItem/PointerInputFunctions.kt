@@ -25,7 +25,7 @@ fun pointerInputHandler(
 
     detectDragGestures(
         onDragStart = onDragStart(button,editAction),
-        onDrag = onDrag(button,editAction,liveUpdateButton),
+        onDrag = onDrag(button, editAction, liveUpdateButton),
         onDragEnd = onDragEnd(button,editAction,confirmEdits)
     )
     
@@ -67,10 +67,7 @@ private fun onDragEnd(
     confirmEdits: (KeyboardButton) -> Unit
 ): () -> Unit = {
     if (editAction.value == EditAction.DRAG){
-        confirmEdits(button.apply {
-            this.x = button.x
-            this.y = button.y
-        })
+        confirmEdits(button)
     }
 }
 
