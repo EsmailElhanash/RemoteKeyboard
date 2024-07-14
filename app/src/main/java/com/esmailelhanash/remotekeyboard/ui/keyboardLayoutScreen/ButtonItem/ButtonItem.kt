@@ -24,7 +24,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.esmailelhanash.remotekeyboard.data.model.KeyboardButton
@@ -48,15 +47,31 @@ fun ButtonItem(button: KeyboardButton
 
 
 
-    // button state and a function to update it
-    var mButton by remember { mutableStateOf(button) }
-    fun updateButton(button: KeyboardButton) {
-        mButton = button
+    // x, y , width and hight states
+    var x by remember { mutableStateOf(button.x) }
+    var y by remember { mutableStateOf(button.y) }
+    var width by remember { mutableStateOf(button.width) }
+    var height by remember { mutableStateOf(button.height) }
+
+    var mButton  by remember { mutableStateOf(button) }
+
+    fun updateButton(newButton: KeyboardButton) {
+        x = newButton.x
+        y = newButton.y
+        width = newButton.width
+        height = newButton.height
+        mButton = newButton
     }
 
+
     Box{
-        ButtonShadow(mButton, selectedLayout)
-        ButtonRoot(mButton, ::updateButton, onEditConfirm, editViewModel, selectedLayout)
+        ButtonShadow(mButton, selectedLayout,
+            x,y,width,height
+
+            )
+        ButtonRoot(mButton, ::updateButton, onEditConfirm, editViewModel, selectedLayout,
+            x,y,width,height
+            )
     }
 }
 @Composable
@@ -65,14 +80,18 @@ private fun ButtonRoot(
     updateButtonState : (KeyboardButton) -> Unit,
     confirmEdits: (KeyboardButton) -> Unit,
     editViewModel: EditViewModel,
-    keyboardLayout: KeyboardLayout
+    keyboardLayout: KeyboardLayout,
+    x:  Int ,
+    y: Int ,
+    width: Int ,
+    height: Int
 ) {
     Box(
         modifier = Modifier
-            .offset(x = button.x.dp, y = button.y.dp)
+            .offset(x = x.dp, y = y.dp)
             .size(
-                width = button.width.dp,
-                height = button.height.dp
+                width = width.dp,
+                height = height.dp
             )
             .border(
                 width = 1.dp,
@@ -136,26 +155,24 @@ private fun VisibleContent(
 @Composable
 private fun ButtonShadow(
     button: KeyboardButton,
-    selectedLayout: KeyboardLayout
+    selectedLayout: KeyboardLayout,
+    x :  Int ,
+    y : Int ,
+    width : Int ,
+    height : Int
 ) {
-    val offset = Offset(
-        button.x.toFloat(), button.y.toFloat()
-    )
-    val size = IntSize(
-        width = button.width,
-        height = button.height
-    )
+
     val shadow = selectedLayout.shadow?.dp ?: 8.dp
     val halfShadow = (shadow / 2 * -1)
     Box(
         modifier = Modifier
             .size(
-                width = size.width.dp + shadow,
-                height = size.height.dp + shadow
+                width = width.dp + shadow,
+                height = height.dp + shadow
             )
             .offset(
-                (halfShadow) + offset.x.dp,
-                halfShadow + offset.y.dp
+                (halfShadow) + x.dp,
+                halfShadow + y.dp
             ) // Adjust the offset to control the shadow's direction
             .background(
                 color = button.backgroundColor.copy(alpha = 0.1f),
