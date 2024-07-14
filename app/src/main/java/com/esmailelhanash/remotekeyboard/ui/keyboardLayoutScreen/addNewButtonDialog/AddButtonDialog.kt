@@ -40,6 +40,7 @@ import com.esmailelhanash.remotekeyboard.utils.colorsList
 import com.esmailelhanash.remotekeyboard.utils.iconsList
 import com.esmailelhanash.remotekeyboard.utils.toName
 import kotlinx.coroutines.delay
+import java.util.UUID
 import kotlin.random.Random
 
 @Composable
@@ -208,6 +209,7 @@ private fun confirm(
         // add button to the layout
         layoutsViewModel.addButtonToSelectedLayout(
             KeyboardButton(
+                id = UUID.randomUUID().toString(),
                 layoutID = selectedLayout.id,
                 name = addButtonViewModel.buttonName.text,
                 keystroke = addButtonViewModel.keyStroke.text,

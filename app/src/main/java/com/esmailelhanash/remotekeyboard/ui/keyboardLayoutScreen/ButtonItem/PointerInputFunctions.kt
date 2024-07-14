@@ -46,6 +46,10 @@ private fun onDrag(
 ) : (change: PointerInputChange, dragAmount: Offset) -> Unit = { _, dragAmount ->
     if (editAction.value == EditAction.DRAG) {
         liveUpdateButton(
+//            button.copy(
+//                x = button.x + dragAmount.div(3.0F).x.toInt(),
+//                y = button.y + dragAmount.div(3.0F).y.toInt()
+//            )
             button.apply{
                 x += dragAmount.div(3.0F).x.toInt()
                 y += dragAmount.div(3.0F).y.toInt()

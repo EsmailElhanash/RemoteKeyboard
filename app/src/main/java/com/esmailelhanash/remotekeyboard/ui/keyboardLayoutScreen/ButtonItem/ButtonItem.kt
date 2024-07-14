@@ -1,5 +1,7 @@
 package com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.ButtonItem
 
+import android.os.Handler
+import android.os.Looper
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -53,6 +55,21 @@ fun ButtonItem(button: KeyboardButton
     fun updateButton(button: KeyboardButton) {
         mButton = button
     }
+
+    // a code that increases the button size by 5px in width and height every second:
+    val handler = Handler(Looper.getMainLooper())
+    val runnable = object : Runnable {
+        override fun run() {
+            mButton = mButton.copy(
+                width = mButton.width + 5,
+                height = mButton.height + 5
+            )
+
+            println("Button new size: width=${mButton.width}, height=${mButton.height}")
+            handler.postDelayed(this, 1000)
+        }
+    }
+    handler.post(runnable)
 
     Box{
         ButtonShadow(mButton, selectedLayout)
@@ -167,33 +184,47 @@ private fun ButtonShadow(
 
 @Composable
 fun EditButtonItem(editViewModel: EditViewModel, shadow: Int?) {
-    val button = editModeButton
+    var button by remember{ mutableStateOf(editModeButton) }
     val editAction by editViewModel.editAction.observeAsState()
-    var maxOffset by remember { mutableStateOf(Offset(button.x.toFloat(), button.y.toFloat())) }
     var showEditDialog by remember { mutableStateOf(false) }
 
     val mShadow = shadow?.dp ?: 8.dp
     val halfShadow = (mShadow / 2 * -1)
 
+//    val handler = Handler(Looper.getMainLooper())
+//    val runnable = object : Runnable {
+//        override fun run() {
+//            button = button.copy(
+//                x = button.x + 5,
+//                y = button.y + 5
+//            )
+//
+//            println("Button new size: width=${button.width}, height=${button.height}")
+//            handler.postDelayed(this, 1000)
+//        }
+//    }
+//    handler.post(runnable)
+
     Box(
         modifier = Modifier
             .size(width = button.width.dp + mShadow, height = button.height.dp + mShadow)
-            .offset((halfShadow) + maxOffset.x.dp, halfShadow + maxOffset.y.dp) // Adjust the offset to control the shadow's direction
+            .offset((halfShadow) + button.x.dp, halfShadow + button.y.dp) // Adjust the offset to control the shadow's direction
             .background(color = button.backgroundColor.copy(alpha = 0.1f), shape = MaterialTheme.shapes.medium) // Customize the shadow color and opacity
     )
 
     Box(
         modifier = Modifier
-            .offset(x = maxOffset.x.dp, y = maxOffset.y.dp)
+            .offset(x = button.x.dp, y = button.y.dp)
             .size(width = button.width.dp, height = button.height.dp)
             .background(color = button.backgroundColor, shape = MaterialTheme.shapes.medium)
             .border(width = 1.dp, shape = MaterialTheme.shapes.medium, color = button.borderColor)
             .pointerInput(Unit) {
                 detectDragGestures { _, dragAmount ->
                     if (editAction == EditAction.DRAG) {
-                        maxOffset = maxOffset.plus(dragAmount.div(3.0F))
-                        button.x = maxOffset.x.toInt()
-                        button.y = maxOffset.y.toInt()
+                        button = button.copy(
+                            x = button.x + dragAmount.div(3.0F).x.toInt(),
+                            y = button.y + dragAmount.div(3.0F).y.toInt()
+                        )
                     }
                 }
             }.clickable {
