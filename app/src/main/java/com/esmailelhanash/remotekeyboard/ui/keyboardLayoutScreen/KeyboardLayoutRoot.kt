@@ -25,6 +25,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberImagePainter
 import com.esmailelhanash.remotekeyboard.data.model.KeyboardButton
 import com.esmailelhanash.remotekeyboard.ui.LayoutsViewModel
+import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.ButtonItem.ButtonItem
+import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.ButtonItem.EditButtonItem
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.addNewButtonDialog.AddNewButtonDialog
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.changeLayoutBackgroundDialog.ChangeLayoutBackgroundDialog
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.changeShadowDialog.ChangeShadowDialog
@@ -75,6 +77,54 @@ fun KeyboardLayoutRoot(layoutsViewModel: LayoutsViewModel) {
         }
     }
 
+    val resizeModifier = if (editAction == EditAction.RESIZE)
+    {
+        Modifier.pointerInput(Unit){
+            detectDragGestures(
+                onDragStart = {
+                    selectedLayout?.keyboardButtons?.reversed()?.forEach { button ->
+                        val liesInXScope = it.x in button.x.dp.toPx()..button.x.dp.toPx() + button.width.dp.toPx()
+                        val liesInYScope = it.y in button.y.dp.toPx()..button.y.dp.toPx() + button.height.dp.toPx()
+
+                        if (liesInXScope && liesInYScope) {
+                            // set the button to resize
+                            // log true
+                            Log.d("EditAction.RESIZE", "true")
+                            dragStartCorner = null
+                            editViewModel.setEditButton(button)
+                            detectDragStartCorner(
+                                button,
+                                it
+                            ){
+                                dragStartCorner = it
+                                // print drag start corner
+                                Log.d("drag_start_corner", "$it")
+                            }
+                            return@forEach
+                        }
+                    }
+                },
+                onDrag = onDrag@{ change, dragAmount ->
+                    change.consume()
+                    // update the button's size and position
+                    // based on the drag amount
+                    handleDragToResize(
+                        dragAmount,
+                        IntSize(
+                            editViewModel.theButtonToEdit.value?.width ?: return@onDrag,
+                            editViewModel.theButtonToEdit.value?.height ?: return@onDrag
+                        ),
+                        dragStartCorner ?: return@onDrag
+                    )
+                },
+
+                onDragEnd = {
+
+                }
+            )
+        }
+    } else Modifier
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
@@ -84,86 +134,9 @@ fun KeyboardLayoutRoot(layoutsViewModel: LayoutsViewModel) {
                     .background(
                         selectedLayout?.background?.color ?: Champagne
                     )
-                .pointerInput(Unit){
-                    detectDragGestures(
-                        onDragStart = {
-                            // loop through the buttons from last to first
-                            // and check if the drag start is on a button
-                            // if so, set the button as the button to resize
-                            // and break the loop
-
-                            if (editAction == EditAction.RESIZE){
-                            selectedLayout?.keyboardButtons?.reversed()?.forEach { button ->
-                                // make logs for button dimensions, in dp and in pxs
-                                Log.d("EditAction.RESIZE button", "x dp: ${button.x.dp}")
-                                Log.d("EditAction.RESIZE button", "x dp: ${button.x.toDp()}")
-                                Log.d("EditAction.RESIZE button", "y dp: ${button.y.dp}")
-                                Log.d("EditAction.RESIZE button", "width dp: ${button.width.dp}")
-                                Log.d("EditAction.RESIZE button", "height dp: ${button.height.dp}")
-                                Log.d("EditAction.RESIZE button", "x dp to px: ${button.x.dp.toPx()}")
-                                Log.d("EditAction.RESIZE button", "y dp to px: ${button.y.dp.toPx()}")
-                                Log.d("EditAction.RESIZE button", "width dp to px: ${button.width.dp.toPx()}")
-                                Log.d("EditAction.RESIZE button", "height dp to px: ${button.height.dp.toPx()}")
-                                Log.d("EditAction.RESIZE button", "x raw: ${button.x}")
-                                Log.d("EditAction.RESIZE button", "y raw: ${button.y}")
-                                Log.d("EditAction.RESIZE button", "width raw: ${button.width}")
-                                Log.d("EditAction.RESIZE button", "height raw: ${button.height}")
-
-                                // log the offset the same way
-                                Log.d("EditAction.RESIZE offset", "x raw: ${it.x}")
-                                Log.d("EditAction.RESIZE offset", "y raw: ${it.y}")
-                                Log.d("EditAction.RESIZE offset", "x dp: ${it.x.dp}")
-                                Log.d("EditAction.RESIZE offset", "y dp: ${it.y.dp}")
-                                Log.d("EditAction.RESIZE offset", "x dp to px: ${it.x.dp.toPx()}")
-                                Log.d("EditAction.RESIZE offset", "y dp to px: ${it.y.dp.toPx()}")
-
-                                // x to dp vs x dp value
-
-
-                                /*
-                                * log the result as boolean & boolean
-                                * */
-                                val condition1 = it.x in button.x.dp.toPx()..button.x.dp.toPx() + button.width.dp.toPx()
-                                val condition2 = it.y in button.y.dp.toPx()..button.y.dp.toPx() + button.height.dp.toPx()
-                                Log.d("EditAction.RESIZE is resizing a button", "$condition1 && $condition2")
-
-
-                                if (condition1 && condition2) {
-                                    // set the button to resize
-                                    editViewModel.setEditButton(button)
-                                    detectDragStartCorner(
-                                        button,
-                                        it
-                                    ){
-                                        dragStartCorner = it
-                                    }
-                                    return@detectDragGestures
-                                }
-                            }
-                                }
-                        },
-                        onDrag = { change, dragAmount ->
-                            if (editAction == EditAction.RESIZE) {
-                                // update the button's size and position
-                                // based on the drag amount
-                                handleDragToResize(
-                                    dragAmount,
-                                    IntSize(
-                                        editViewModel.theButtonToEdit.value?.width ?: return@detectDragGestures,
-                                        editViewModel.theButtonToEdit.value?.height ?: return@detectDragGestures
-                                    ),
-                                    dragStartCorner ?: return@detectDragGestures
-                                )
-                            }
-                        },
-
-                        onDragEnd = {
-                            if (editAction == EditAction.RESIZE) {
-
-                            }
-                        }
-                    )
-                }
+                .then(
+                    resizeModifier
+                )
             ) {
                 selectedLayout?.background?.image?.let { imagePath ->
                     val imageUri = "file://$imagePath"
@@ -176,14 +149,14 @@ fun KeyboardLayoutRoot(layoutsViewModel: LayoutsViewModel) {
                 }
 
                 selectedLayout?.keyboardButtons?.forEach { button ->
-                    ButtonItem(button = button, layoutsViewModel = layoutsViewModel, editViewModel = editViewModel){
+                    ButtonItem(button = button, editViewModel,selectedLayout!!){
                         layoutsViewModel.updateButtonInSelectedLayout(it)
                     }
                 }
 
                 if (editMode == true){
                     EditButtonItem(
-                        editViewModel, layoutsViewModel
+                        editViewModel, selectedLayout?.shadow
                     )
                 }
             }

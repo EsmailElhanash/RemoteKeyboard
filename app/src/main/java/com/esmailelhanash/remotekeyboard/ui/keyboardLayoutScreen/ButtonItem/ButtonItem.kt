@@ -86,6 +86,19 @@ private fun ButtonRoot(
     width: Int ,
     height: Int
 ) {
+    val editAction by editViewModel.editAction.observeAsState()
+    val dragModifier = if (editAction == EditAction.DRAG){
+        Modifier.pointerInput(
+            key1 = Unit,
+            block = pointerInputHandler(
+                confirmEdits,
+                button,
+                updateButtonState,
+                editViewModel.editAction
+            )
+        )
+    }else Modifier
+
     Box(
         modifier = Modifier
             .offset(x = x.dp, y = y.dp)
@@ -99,14 +112,8 @@ private fun ButtonRoot(
                 color = button.borderColor
             )
             .background(color = button.backgroundColor, shape = MaterialTheme.shapes.medium)
-            .pointerInput(
-                key1 = Unit,
-                block = pointerInputHandler(
-                    confirmEdits,
-                    button,
-                    updateButtonState,
-                    editViewModel.editAction
-                )
+            .then(
+                dragModifier
             )
             .clickable {
                 if (editViewModel.editAction.value != null)
