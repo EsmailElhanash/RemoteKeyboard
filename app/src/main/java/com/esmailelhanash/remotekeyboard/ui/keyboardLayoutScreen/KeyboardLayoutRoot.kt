@@ -19,6 +19,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -43,83 +44,98 @@ fun KeyboardLayoutRoot(layoutsViewModel: LayoutsViewModel) {
     // initiate EditViewModel in the scope of this composable
     val editViewModel : EditViewModel = viewModel()
     val theButtonToEdit by editViewModel.theButtonToEdit.observeAsState()
+
+    var theButtonToResize by remember { mutableStateOf<KeyboardButton?>(null) }
+
+    val buttonDimensions = remember(theButtonToResize) {
+        val button = theButtonToResize
+        if (button != null) {
+            Dimensions(button.x, button.y, button.width, button.height)
+        } else {
+            Dimensions(0, 0, 0, 0)
+        }
+    }
+
+
     val editAction by editViewModel.editAction.observeAsState()
 
     var dragStartCorner by remember {
         mutableStateOf<DragStartCorner?>(null)
     }
-    editViewModel.editAction.observeAsState().let {
-        when (it.value) {
-            EditAction.ADD_NEW_BUTTON -> {
-                AddNewButtonDialog(layoutsViewModel){
-                    editViewModel.setEditAction(null)
-                }
-            }
-            EditAction.DRAG -> {}
-            EditAction.RESIZE -> {}
-            EditAction.RENAME -> {}
-            EditAction.CHANGE_ICON -> {}
-            EditAction.CHANGE_KEYSTROKE -> {}
-            EditAction.CHANGE_COLORS -> {}
-            EditAction.CHANGE_BG -> {
-                ChangeLayoutBackgroundDialog(layoutsViewModel){
-                    editViewModel.setEditAction(null)
-                }
-            }
-            EditAction.CHANGE_FONT -> {}
-            EditAction.CHANGE_FONT_SIZE -> {}
-            EditAction.CHANGE_SHADOW -> {
-                ChangeShadowDialog(layoutsViewModel){
-                    editViewModel.setEditAction(null)
-                }
-            }
-            null -> {}
-        }
-    }
+
+    val density = LocalDensity.current
 
     val resizeModifier = if (editAction == EditAction.RESIZE)
     {
         Modifier.pointerInput(Unit){
             detectDragGestures(
                 onDragStart = {
-                    selectedLayout?.keyboardButtons?.reversed()?.forEach { button ->
-                        val liesInXScope = it.x in button.x.dp.toPx()..button.x.dp.toPx() + button.width.dp.toPx()
-                        val liesInYScope = it.y in button.y.dp.toPx()..button.y.dp.toPx() + button.height.dp.toPx()
+                    with(density) {
+                        selectedLayout?.keyboardButtons?.reversed()?.forEach { button ->
+                            // Convert button properties to pixels
+                            val buttonXInPx = button.x.dp.toPx()
+                            val buttonYInPx = button.y.dp.toPx()
+                            val buttonWidthInPx = button.width.dp.toPx() + 10.dp.toPx()
+                            val buttonHeightInPx = button.height.dp.toPx() + 10.dp.toPx()
 
-                        if (liesInXScope && liesInYScope) {
-                            // set the button to resize
-                            // log true
-                            Log.d("EditAction.RESIZE", "true")
-                            dragStartCorner = null
-                            editViewModel.setEditButton(button)
-                            detectDragStartCorner(
-                                button,
-                                it
-                            ){
-                                dragStartCorner = it
-                                // print drag start corner
-                                Log.d("drag_start_corner", "$it")
+                            // Log the values
+                            Log.d("ButtonProperties", "Button X in Px: $buttonXInPx")
+                            Log.d("ButtonProperties", "Button Y in Px: $buttonYInPx")
+                            Log.d("ButtonProperties", "Button Width in Px: $buttonWidthInPx")
+                            Log.d("ButtonProperties", "Button Height in Px: $buttonHeightInPx")
+
+                            val touchPosition = it
+
+                            // Use the pixel values in your formula
+                            val liesInXScope =
+                                touchPosition.x in buttonXInPx..buttonXInPx + buttonWidthInPx
+                            val liesInYScope =
+                                touchPosition.y in buttonYInPx..buttonYInPx + buttonHeightInPx
+
+
+
+                            Log.d("touchPosition", "x: ${touchPosition.x} y: ${touchPosition.y}")
+                            Log.d("TouchScope", "Lies in X Scope: $liesInXScope")
+                            Log.d("TouchScope", "Lies in Y Scope: $liesInYScope")
+
+                            if (liesInXScope && liesInYScope) {
+                                // set the button to resize
+                                // log true
+                                Log.d("EditAction.RESIZE", "true")
+                                dragStartCorner = null
+                                theButtonToResize = button
+                                detectDragStartCorner(
+                                    button,
+                                    it
+                                ) {
+                                    dragStartCorner = it
+                                    // print drag start corner
+                                    Log.d("drag_start_corner", "$it")
+                                }
+                                return@forEach
                             }
-                            return@forEach
                         }
                     }
                 },
                 onDrag = onDrag@{ change, dragAmount ->
                     change.consume()
-                    // update the button's size and position
-                    // based on the drag amount
+
                     handleDragToResize(
                         dragAmount,
+                        theButtonToResize ?: return@onDrag,
                         IntSize(
                             editViewModel.theButtonToEdit.value?.width ?: return@onDrag,
                             editViewModel.theButtonToEdit.value?.height ?: return@onDrag
                         ),
                         dragStartCorner ?: return@onDrag
-                    )
+                    ){
+                        theButtonToResize = it
+                    }
                 },
 
                 onDragEnd = {
-
+                    theButtonToResize?.let { layoutsViewModel.updateButtonInSelectedLayout(it) }
+                    theButtonToResize = null
                 }
             )
         }
@@ -149,9 +165,12 @@ fun KeyboardLayoutRoot(layoutsViewModel: LayoutsViewModel) {
                 }
 
                 selectedLayout?.keyboardButtons?.forEach { button ->
-                    ButtonItem(button = button, editViewModel,selectedLayout!!){
-                        layoutsViewModel.updateButtonInSelectedLayout(it)
-                    }
+                    ButtonItem(button = button
+                        , editViewModel,selectedLayout!!
+                        , dimensions = if (button == theButtonToResize)
+                            buttonDimensions else null){
+                            layoutsViewModel.updateButtonInSelectedLayout(it)
+                        }
                 }
 
                 if (editMode == true){
@@ -167,56 +186,117 @@ fun KeyboardLayoutRoot(layoutsViewModel: LayoutsViewModel) {
             }
         }
     )
+
+    EditActionsDialogs(editViewModel, layoutsViewModel)
+}
+
+@Composable
+private fun EditActionsDialogs(
+    editViewModel: EditViewModel,
+    layoutsViewModel: LayoutsViewModel
+) {
+    editViewModel.editAction.observeAsState().let {
+        when (it.value) {
+            EditAction.ADD_NEW_BUTTON -> {
+                AddNewButtonDialog(layoutsViewModel) {
+                    editViewModel.setEditAction(null)
+                }
+            }
+
+            EditAction.DRAG -> {}
+            EditAction.RESIZE -> {}
+            EditAction.RENAME -> {}
+            EditAction.CHANGE_ICON -> {}
+            EditAction.CHANGE_KEYSTROKE -> {}
+            EditAction.CHANGE_COLORS -> {}
+            EditAction.CHANGE_BG -> {
+                ChangeLayoutBackgroundDialog(layoutsViewModel) {
+                    editViewModel.setEditAction(null)
+                }
+            }
+
+            EditAction.CHANGE_FONT -> {}
+            EditAction.CHANGE_FONT_SIZE -> {}
+            EditAction.CHANGE_SHADOW -> {
+                ChangeShadowDialog(layoutsViewModel) {
+                    editViewModel.setEditAction(null)
+                }
+            }
+
+            null -> {}
+        }
+    }
 }
 
 private fun handleDragToResize(
     dragAmount: Offset,
-    size: IntSize,
-    dragStartCorner: DragStartCorner
+    button: KeyboardButton,
+    oldSize: IntSize,
+    dragStartCorner: DragStartCorner,
+    updateButton:  (KeyboardButton) -> Unit
 ) {
     val myDragAmount = dragAmount.div(5.0F) // Adjust the drag sensitivity if needed
     Log.d("dragStartCorner", dragStartCorner.toString())
     when (dragStartCorner) {
         DragStartCorner.TOP_LEFT -> {
-            val newWidth = size.width - myDragAmount.x.toInt()
-            val newHeight = size.height - myDragAmount.y.toInt()
+            val newWidth = oldSize.width - myDragAmount.x.toInt()
+            val newHeight = oldSize.height - myDragAmount.y.toInt()
             if (newWidth > 10 && newHeight > 10) {
-//                updateOffset(offset.plus(Offset(myDragAmount.x, myDragAmount.y)))
-//                updateSize(IntSize(newWidth, newHeight))
+
+                updateButton(
+                    button.apply {
+                        x += myDragAmount.x.toInt()
+                        y += myDragAmount.y.toInt()
+                        width = newWidth
+                        height = newHeight
+                    }
+                )
             }
         }
 
         DragStartCorner.TOP_RIGHT -> {
-            val newWidth = size.width + myDragAmount.x.toInt()
-            val newHeight = size.height - myDragAmount.y.toInt()
+            val newWidth = oldSize.width + myDragAmount.x.toInt()
+            val newHeight = oldSize.height - myDragAmount.y.toInt()
             if (newWidth > 10 && newHeight > 10) {
-//                updateOffset(offset.plus(Offset(0f, myDragAmount.y)))
-//                updateSize(IntSize(newWidth, newHeight))
+
+                updateButton(
+                    button.apply {
+                        y += myDragAmount.y.toInt()
+                        width = newWidth
+                        height = newHeight
+                    }
+                )
             }
         }
 
         DragStartCorner.BOTTOM_LEFT -> {
-            val newWidth = size.width - myDragAmount.x.toInt()
-            val newHeight = size.height + myDragAmount.y.toInt()
+            val newWidth = oldSize.width - myDragAmount.x.toInt()
+            val newHeight = oldSize.height + myDragAmount.y.toInt()
             if (newWidth > 10 && newHeight > 10) {
-//                updateOffset(offset.plus(Offset(myDragAmount.x, 0f)))
-//                updateSize(IntSize(newWidth, newHeight))
+                updateButton(
+                    button.apply {
+                        x += myDragAmount.x.toInt()
+                        width = newWidth
+                        height = newHeight
+                    }
+                )
             }
         }
 
         DragStartCorner.BOTTOM_RIGHT -> {
-            val newWidth = size.width + myDragAmount.x.toInt()
-            val newHeight = size.height + myDragAmount.y.toInt()
+            val newWidth = oldSize.width + myDragAmount.x.toInt()
+            val newHeight = oldSize.height + myDragAmount.y.toInt()
             if (newWidth > 10 && newHeight > 10) {
-                // No need to change maxOffset for bottom right drag
-//                updateSize(IntSize(newWidth, newHeight))
+                updateButton(
+                    button.apply {
+                        width = newWidth
+                        height = newHeight
+                    }
+                )
             }
         }
-
-        null -> {}
     }
-//    button.width = size.width
-//    button.height = size.height
+
 }
 
 
@@ -295,3 +375,6 @@ enum class DragStartCorner {
     BOTTOM_LEFT,
     BOTTOM_RIGHT
 }
+
+data class Dimensions(val x: Int, val y: Int, val width: Int, val height: Int)
+

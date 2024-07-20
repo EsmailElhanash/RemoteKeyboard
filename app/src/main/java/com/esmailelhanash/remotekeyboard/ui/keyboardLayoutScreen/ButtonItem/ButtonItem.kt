@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -28,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.esmailelhanash.remotekeyboard.data.model.KeyboardButton
 import com.esmailelhanash.remotekeyboard.data.model.KeyboardLayout
+import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.Dimensions
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.EditAction
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.EditViewModel
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.editActionsDialog.EditModeActionsDialog
@@ -38,20 +40,36 @@ import com.esmailelhanash.remotekeyboard.utils.toIcon
 
 private const val TAG = "ButtonItem"
 
-
 @Composable
 fun ButtonItem(button: KeyboardButton
                , editViewModel: EditViewModel
                , selectedLayout: KeyboardLayout
+               , dimensions: Dimensions? = null
                , onEditConfirm: (KeyboardButton) -> Unit) {
 
 
 
-    // x, y , width and hight states
-    var x by remember { mutableStateOf(button.x) }
-    var y by remember { mutableStateOf(button.y) }
-    var width by remember { mutableStateOf(button.width) }
-    var height by remember { mutableStateOf(button.height) }
+    // x, y , width and height states
+    var x by remember {
+        mutableIntStateOf(
+            if (dimensions?.x != null) dimensions.x
+            else button.x)
+    }
+    var y by remember {
+        mutableIntStateOf(
+            if (dimensions?.y != null) dimensions.y
+            else button.y)
+    }
+    var width by remember {
+        mutableIntStateOf(
+            if (dimensions?.width != null) dimensions.width
+            else button.width)
+    }
+    var height by remember {
+        mutableIntStateOf(
+            if (dimensions?.height != null) dimensions.height
+            else button.height)
+    }
 
     var mButton  by remember { mutableStateOf(button) }
 
@@ -97,7 +115,7 @@ private fun ButtonRoot(
                 editViewModel.editAction
             )
         )
-    }else Modifier
+    } else Modifier
 
     Box(
         modifier = Modifier
