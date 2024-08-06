@@ -15,4 +15,22 @@ data class KeyboardButton(
     var borderColor: Color,
     var textColor: Color,
     var fontSize: Int?,
-)
+    val id: String
+){
+
+    override fun equals(other: Any?): Boolean {
+        // Check if the other object is an instance of KeyboardButton
+        if (other !is KeyboardButton) {
+            return false
+        }
+
+        // Compare the id of the two objects
+        return this.id == other.id
+
+
+    }
+
+    override fun hashCode(): Int {
+        return id.hashCode()
+    }
+}

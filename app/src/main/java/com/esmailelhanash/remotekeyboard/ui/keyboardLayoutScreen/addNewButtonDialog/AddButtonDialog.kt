@@ -40,6 +40,7 @@ import com.esmailelhanash.remotekeyboard.utils.colorsList
 import com.esmailelhanash.remotekeyboard.utils.iconsList
 import com.esmailelhanash.remotekeyboard.utils.toName
 import kotlinx.coroutines.delay
+import java.util.UUID
 import kotlin.random.Random
 
 @Composable
@@ -219,7 +220,8 @@ private fun confirm(
                 backgroundColor = addButtonViewModel.selectedBGColor ?: Champagne,
                 borderColor = addButtonViewModel.selectedBorderColor ?: OldRose,
                 textColor = addButtonViewModel.selectedTextColor ?: BlackBean,
-                fontSize = 16
+                fontSize = 16,
+                id = UUID.randomUUID().toString()
             )
         )
         // dismiss the dialog:
