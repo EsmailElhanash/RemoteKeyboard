@@ -40,6 +40,31 @@ import com.esmailelhanash.remotekeyboard.utils.toIcon
 
 private const val TAG = "ButtonItem"
 
+
+// button item that is managed by the KeyboardLayoutRoot, x, y ,width and height are parameters managed
+// by the KeyboardLayoutRoot
+@Composable
+fun ExternallyManagedButtonItem(
+    button: KeyboardButton,
+    editViewModel: EditViewModel,
+    selectedLayout: KeyboardLayout,
+    x : Int,
+    y : Int,
+    width : Int,
+    height : Int,
+    updateButtonState : (KeyboardButton) -> Unit,
+    onEditConfirm: (KeyboardButton) -> Unit
+) {
+    Box{
+        ButtonShadow(button, selectedLayout,
+            x,y,width,height
+
+        )
+        ButtonRoot(button, updateButtonState, onEditConfirm, editViewModel, selectedLayout,
+            x,y,width,height
+        )
+    }
+}
 @Composable
 fun ButtonItem(button: KeyboardButton
                , editViewModel: EditViewModel

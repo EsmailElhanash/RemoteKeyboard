@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -25,9 +26,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberImagePainter
 import com.esmailelhanash.remotekeyboard.data.model.KeyboardButton
+import com.esmailelhanash.remotekeyboard.data.model.KeyboardLayout
 import com.esmailelhanash.remotekeyboard.ui.LayoutsViewModel
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.ButtonItem.ButtonItem
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.ButtonItem.EditButtonItem
+import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.ButtonItem.ExternallyManagedButtonItem
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.addNewButtonDialog.AddNewButtonDialog
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.changeLayoutBackgroundDialog.ChangeLayoutBackgroundDialog
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.changeShadowDialog.ChangeShadowDialog
@@ -38,26 +41,162 @@ import kotlin.math.sqrt
 
 @Composable
 fun KeyboardLayoutRoot(layoutsViewModel: LayoutsViewModel) {
-    val selectedLayout by layoutsViewModel.selectedLayout.observeAsState()
-    val editMode by layoutsViewModel.editMode.observeAsState()
-
-    // initiate EditViewModel in the scope of this composable
+    val selectedLayout = layoutsViewModel.selectedLayout.value
+    val isEditMode = layoutsViewModel.editMode.value
     val editViewModel : EditViewModel = viewModel()
-    val theButtonToEdit by editViewModel.theButtonToEdit.observeAsState()
 
-    var theButtonToResize by remember { mutableStateOf<KeyboardButton?>(null) }
 
-    val buttonDimensions = remember(theButtonToResize) {
-        val button = theButtonToResize
-        if (button != null) {
-            Dimensions(button.x, button.y, button.width, button.height)
-        } else {
-            Dimensions(0, 0, 0, 0)
+
+    Scaffold(
+        modifier = Modifier
+            .fillMaxSize(),
+        content = { innerPadding ->
+            Content(
+                innerPadding,
+                selectedLayout ?: return@Scaffold,
+                layoutsViewModel,
+                isEditMode,
+                editViewModel
+            )
         }
+    )
+
+    EditActionsDialogs(editViewModel, layoutsViewModel)
+}
+
+@Composable
+private fun Content(
+    innerPadding: PaddingValues,
+    selectedLayout: KeyboardLayout,
+    layoutsViewModel: LayoutsViewModel,
+    isEditMode: Boolean?,
+    editViewModel : EditViewModel
+) {
+    var keyboardButtons by remember {
+        mutableStateOf(selectedLayout.keyboardButtons)
     }
 
+    val theButtonToEdit by editViewModel.theButtonToEdit.observeAsState()
+
+    var x by remember {
+        mutableStateOf(theButtonToEdit?.x)
+    }
+    var y by remember {
+        mutableStateOf(theButtonToEdit?.y)
+    }
+    var width by remember {
+        mutableStateOf(theButtonToEdit?.width)
+    }
+    var height by remember {
+        mutableStateOf(theButtonToEdit?.height)
+    }
+
+    fun updateButton(newButton: KeyboardButton) {
+        x = newButton.x
+        y = newButton.y
+        width = newButton.width
+        height = newButton.height
+    }
 
     val editAction by editViewModel.editAction.observeAsState()
+
+    val resizeModifier =
+        Modifier.resizeModifier(editAction, keyboardButtons, layoutsViewModel, editViewModel) {
+            // update the button in keyboardButtons which is equal to the button it with the new values
+            keyboardButtons = keyboardButtons.map { button ->
+                if (button == it) {
+                    updateButton(it)
+                    it
+                } else {
+                    button
+                }
+            }
+        }
+
+    Box(
+        modifier = Modifier.padding(innerPadding)
+            .fillMaxSize()
+            .background(
+                selectedLayout.background?.color ?: Champagne
+            ).then(
+                resizeModifier
+            )
+    ) {
+        selectedLayout.background?.image?.let { imagePath ->
+            val imageUri = "file://$imagePath"
+            Image(
+                painter = rememberImagePainter(imageUri),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(), // Make the image fill the Box
+                contentScale = ContentScale.Crop,// Adjust the scaling of the image
+            )
+        }
+
+        keyboardButtons.forEach { button ->
+            if (theButtonToEdit == button) {
+                MyManagedButton(
+                    button,
+                    x = x,
+                    y = y,
+                    width = width,
+                    height = height,
+                    updateButton = ::updateButton,
+                    editViewModel, layoutsViewModel
+                )
+            } else ButtonItem(
+                button = button, editViewModel, selectedLayout
+            ) {
+                layoutsViewModel.updateButtonInSelectedLayout(it)
+            }
+        }
+
+        if (isEditMode == true) {
+            EditButtonItem(
+                editViewModel, selectedLayout?.shadow
+            )
+        }
+    }
+    if (editAction != null && theButtonToEdit != null) {
+        EditDialogs(onEditConfirm = {
+            layoutsViewModel.updateButtonInSelectedLayout(it)
+        }, editViewModel)
+    }
+}
+
+@Composable
+private fun MyManagedButton(button: KeyboardButton,
+                    x: Int?,
+                    y: Int?,
+                    width: Int?,
+                    height: Int?,
+                    updateButton: (KeyboardButton) -> Unit,
+                    editViewModel: EditViewModel,
+                    layoutsViewModel: LayoutsViewModel) {
+    val selectedLayout by layoutsViewModel.selectedLayout.observeAsState()
+
+    ExternallyManagedButtonItem(
+        button = button,
+        editViewModel = editViewModel,
+        selectedLayout = selectedLayout!!,
+        x = x ?: return,
+        y = y?: return,
+        width = width?: return,
+        height = height?: return,
+        updateButtonState = updateButton
+    ){
+        layoutsViewModel.updateButtonInSelectedLayout(it)
+    }
+}
+
+@Composable
+private fun Modifier.resizeModifier(
+    editAction: EditAction?,
+    keyboardButtons: List<KeyboardButton>?,
+    layoutsViewModel: LayoutsViewModel,
+    editViewModel: EditViewModel,
+    updateButton: (KeyboardButton) -> Unit
+): Modifier {
+    val theButtonToResize by editViewModel.theButtonToEdit.observeAsState()
 
     var dragStartCorner by remember {
         mutableStateOf<DragStartCorner?>(null)
@@ -65,13 +204,12 @@ fun KeyboardLayoutRoot(layoutsViewModel: LayoutsViewModel) {
 
     val density = LocalDensity.current
 
-    val resizeModifier = if (editAction == EditAction.RESIZE)
-    {
-        Modifier.pointerInput(Unit){
+    val resizeModifier = if (editAction == EditAction.RESIZE) {
+        Modifier.pointerInput(Unit) {
             detectDragGestures(
                 onDragStart = {
                     with(density) {
-                        selectedLayout?.keyboardButtons?.reversed()?.forEach { button ->
+                        keyboardButtons?.reversed()?.forEach { button ->
                             // Convert button properties to pixels
                             val buttonXInPx = button.x.dp.toPx()
                             val buttonYInPx = button.y.dp.toPx()
@@ -103,7 +241,7 @@ fun KeyboardLayoutRoot(layoutsViewModel: LayoutsViewModel) {
                                 // log true
                                 Log.d("EditAction.RESIZE", "true")
                                 dragStartCorner = null
-                                theButtonToResize = button
+                                editViewModel.setEditButton(button)
                                 detectDragStartCorner(
                                     button,
                                     it
@@ -124,70 +262,24 @@ fun KeyboardLayoutRoot(layoutsViewModel: LayoutsViewModel) {
                         dragAmount,
                         theButtonToResize ?: return@onDrag,
                         IntSize(
-                            editViewModel.theButtonToEdit.value?.width ?: return@onDrag,
-                            editViewModel.theButtonToEdit.value?.height ?: return@onDrag
+                            theButtonToResize?.width ?: return@onDrag,
+                            theButtonToResize?.height ?: return@onDrag
                         ),
                         dragStartCorner ?: return@onDrag
-                    ){
-                        theButtonToResize = it
+                    ) {
+                        editViewModel.setEditButton(it)
+                        updateButton(it)
                     }
                 },
 
                 onDragEnd = {
                     theButtonToResize?.let { layoutsViewModel.updateButtonInSelectedLayout(it) }
-                    theButtonToResize = null
+                    editViewModel.setEditButton(null)
                 }
             )
         }
     } else Modifier
-
-    Scaffold(
-        modifier = Modifier
-            .fillMaxSize(),
-        content = { innerPadding ->
-            Box(modifier = Modifier.padding(innerPadding)
-                    .fillMaxSize()
-                    .background(
-                        selectedLayout?.background?.color ?: Champagne
-                    )
-                .then(
-                    resizeModifier
-                )
-            ) {
-                selectedLayout?.background?.image?.let { imagePath ->
-                    val imageUri = "file://$imagePath"
-                    Image(
-                        painter = rememberImagePainter(imageUri),
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxSize(), // Make the image fill the Box
-                        contentScale = ContentScale.Crop ,// Adjust the scaling of the image
-                    )
-                }
-
-                selectedLayout?.keyboardButtons?.forEach { button ->
-                    ButtonItem(button = button
-                        , editViewModel,selectedLayout!!
-                        , dimensions = if (button == theButtonToResize)
-                            buttonDimensions else null){
-                            layoutsViewModel.updateButtonInSelectedLayout(it)
-                        }
-                }
-
-                if (editMode == true){
-                    EditButtonItem(
-                        editViewModel, selectedLayout?.shadow
-                    )
-                }
-            }
-            if (editAction != null && theButtonToEdit != null) {
-                EditDialogs(onEditConfirm = {
-                    layoutsViewModel.updateButtonInSelectedLayout(it)
-                }, editViewModel )
-            }
-        }
-    )
-
-    EditActionsDialogs(editViewModel, layoutsViewModel)
+    return this.then(resizeModifier)
 }
 
 @Composable
