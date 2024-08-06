@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberImagePainter
 import com.esmailelhanash.remotekeyboard.data.model.KeyboardButton
-import com.esmailelhanash.remotekeyboard.data.model.KeyboardLayout
 import com.esmailelhanash.remotekeyboard.ui.LayoutsViewModel
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.ButtonItem.ButtonItem
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.ButtonItem.EditButtonItem
@@ -41,7 +40,6 @@ import kotlin.math.sqrt
 
 @Composable
 fun KeyboardLayoutRoot(layoutsViewModel: LayoutsViewModel) {
-    val selectedLayout = layoutsViewModel.selectedLayout.value
     val isEditMode = layoutsViewModel.editMode.value
     val editViewModel : EditViewModel = viewModel()
 
@@ -53,7 +51,6 @@ fun KeyboardLayoutRoot(layoutsViewModel: LayoutsViewModel) {
         content = { innerPadding ->
             Content(
                 innerPadding,
-                selectedLayout ?: return@Scaffold,
                 layoutsViewModel,
                 isEditMode,
                 editViewModel
@@ -67,13 +64,16 @@ fun KeyboardLayoutRoot(layoutsViewModel: LayoutsViewModel) {
 @Composable
 private fun Content(
     innerPadding: PaddingValues,
-    selectedLayout: KeyboardLayout,
     layoutsViewModel: LayoutsViewModel,
     isEditMode: Boolean?,
     editViewModel : EditViewModel
 ) {
+    val selectedLayout by layoutsViewModel.selectedLayout.observeAsState()
+
+
+
     var keyboardButtons by remember {
-        mutableStateOf(selectedLayout.keyboardButtons)
+        mutableStateOf(selectedLayout?.keyboardButtons)
     }
 
     val theButtonToEdit by editViewModel.theButtonToEdit.observeAsState()
@@ -103,7 +103,7 @@ private fun Content(
     val resizeModifier =
         Modifier.resizeModifier(editAction, keyboardButtons, layoutsViewModel, editViewModel) {
             // update the button in keyboardButtons which is equal to the button it with the new values
-            keyboardButtons = keyboardButtons.map { button ->
+            keyboardButtons = keyboardButtons?.map { button ->
                 if (button == it) {
                     updateButton(it)
                     it
@@ -117,12 +117,12 @@ private fun Content(
         modifier = Modifier.padding(innerPadding)
             .fillMaxSize()
             .background(
-                selectedLayout.background?.color ?: Champagne
+                selectedLayout?.background?.color ?: Champagne
             ).then(
                 resizeModifier
             )
     ) {
-        selectedLayout.background?.image?.let { imagePath ->
+        selectedLayout?.background?.image?.let { imagePath ->
             val imageUri = "file://$imagePath"
             Image(
                 painter = rememberImagePainter(imageUri),
@@ -132,7 +132,7 @@ private fun Content(
             )
         }
 
-        keyboardButtons.forEach { button ->
+        keyboardButtons?.forEach { button ->
             if (theButtonToEdit == button) {
                 MyManagedButton(
                     button,
@@ -144,7 +144,7 @@ private fun Content(
                     editViewModel, layoutsViewModel
                 )
             } else ButtonItem(
-                button = button, editViewModel, selectedLayout
+                button = button, editViewModel, selectedLayout!!
             ) {
                 layoutsViewModel.updateButtonInSelectedLayout(it)
             }
