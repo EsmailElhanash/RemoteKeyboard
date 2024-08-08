@@ -40,7 +40,7 @@ import kotlin.math.sqrt
 
 @Composable
 fun KeyboardLayoutRoot(layoutsViewModel: LayoutsViewModel) {
-    val isEditMode = layoutsViewModel.editMode.value
+    val isEditMode by layoutsViewModel.editMode.observeAsState()
     val editViewModel : EditViewModel = viewModel()
 
 
@@ -70,12 +70,6 @@ private fun Content(
 ) {
     val selectedLayout by layoutsViewModel.selectedLayout.observeAsState()
 
-
-
-    var keyboardButtons by remember {
-        mutableStateOf(selectedLayout?.keyboardButtons)
-    }
-
     val theButtonToEdit by editViewModel.theButtonToEdit.observeAsState()
 
     var x by remember {
@@ -101,15 +95,13 @@ private fun Content(
     val editAction by editViewModel.editAction.observeAsState()
 
     val resizeModifier =
-        Modifier.resizeModifier(editAction, keyboardButtons, layoutsViewModel, editViewModel) {
+        Modifier.resizeModifier(editAction, selectedLayout?.keyboardButtons, layoutsViewModel, editViewModel) {
             // update the button in keyboardButtons which is equal to the button it with the new values
-            keyboardButtons = keyboardButtons?.map { button ->
+            selectedLayout?.keyboardButtons?.map { button ->
                 if (button == it) {
                     updateButton(it)
-                    it
-                } else {
-                    button
                 }
+                button
             }
         }
 
@@ -132,22 +124,25 @@ private fun Content(
             )
         }
 
-        keyboardButtons?.forEach { button ->
-            if (theButtonToEdit == button) {
-                MyManagedButton(
-                    button,
-                    x = x,
-                    y = y,
-                    width = width,
-                    height = height,
-                    updateButton = ::updateButton,
-                    editViewModel, layoutsViewModel
-                )
-            } else ButtonItem(
+        selectedLayout?.keyboardButtons?.forEach { button ->
+            if (theButtonToEdit != button) ButtonItem(
                 button = button, editViewModel, selectedLayout!!
             ) {
                 layoutsViewModel.updateButtonInSelectedLayout(it)
             }
+        }
+
+        theButtonToEdit?.let { button ->
+            MyManagedButton(
+                button = button,
+                x = x,
+                y = y,
+                width = width,
+                height = height,
+                updateButton = ::updateButton,
+                editViewModel = editViewModel,
+                layoutsViewModel = layoutsViewModel
+            )
         }
 
         if (isEditMode == true) {
@@ -240,6 +235,9 @@ private fun Modifier.resizeModifier(
                                 // set the button to resize
                                 // log true
                                 Log.d("EditAction.RESIZE", "true")
+                                // print button name of the button
+                                Log.d("resizing button", button.name)
+
                                 dragStartCorner = null
                                 editViewModel.setEditButton(button)
                                 detectDragStartCorner(
@@ -267,7 +265,6 @@ private fun Modifier.resizeModifier(
                         ),
                         dragStartCorner ?: return@onDrag
                     ) {
-                        editViewModel.setEditButton(it)
                         updateButton(it)
                     }
                 },
