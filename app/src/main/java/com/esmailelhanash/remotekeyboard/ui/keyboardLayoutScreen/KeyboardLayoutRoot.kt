@@ -204,7 +204,7 @@ private fun Modifier.resizeModifier(
             detectDragGestures(
                 onDragStart = {
                     with(density) {
-                        keyboardButtons?.reversed()?.forEach { button ->
+                        keyboardButtons?.forEach { button ->
                             // Convert button properties to pixels
                             val buttonXInPx = button.x.dp.toPx()
                             val buttonYInPx = button.y.dp.toPx()
