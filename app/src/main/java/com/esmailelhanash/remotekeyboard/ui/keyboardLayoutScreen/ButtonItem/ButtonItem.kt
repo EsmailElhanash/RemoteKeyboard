@@ -38,8 +38,6 @@ import com.esmailelhanash.remotekeyboard.utils.editModeButton
 import com.esmailelhanash.remotekeyboard.utils.toFontFamily
 import com.esmailelhanash.remotekeyboard.utils.toIcon
 
-private const val TAG = "ButtonItem"
-
 
 // button item that is managed by the KeyboardLayoutRoot, x, y ,width and height are parameters managed
 // by the KeyboardLayoutRoot
@@ -284,12 +282,4 @@ fun EditButtonItem(editViewModel: EditViewModel, shadow: Int?) {
             showEditDialog = it
         }
     }
-}
-
-
-enum class DragStartCorner {
-    TOP_LEFT,
-    TOP_RIGHT,
-    BOTTOM_LEFT,
-    BOTTOM_RIGHT
 }

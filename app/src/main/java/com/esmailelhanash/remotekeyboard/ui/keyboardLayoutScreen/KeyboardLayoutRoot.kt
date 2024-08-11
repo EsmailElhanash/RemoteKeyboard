@@ -33,6 +33,7 @@ import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.ButtonItem.Exte
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.addNewButtonDialog.AddNewButtonDialog
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.changeLayoutBackgroundDialog.ChangeLayoutBackgroundDialog
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.changeShadowDialog.ChangeShadowDialog
+import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.chooseLayoutFontDialog.ChooseLayoutFontDialog
 import com.esmailelhanash.remotekeyboard.ui.keyboardLayoutScreen.editDialogs.EditDialogs
 import com.esmailelhanash.remotekeyboard.ui.theme.Champagne
 import kotlin.math.sqrt
@@ -151,7 +152,7 @@ private fun Content(
             )
         }
     }
-    if (editAction != null && theButtonToEdit != null) {
+    if (editAction != null) {
         EditDialogs(onEditConfirm = {
             layoutsViewModel.updateButtonInSelectedLayout(it)
         }, editViewModel)
@@ -304,7 +305,11 @@ private fun EditActionsDialogs(
                 }
             }
 
-            EditAction.CHANGE_FONT -> {}
+            EditAction.CHANGE_FONT -> {
+                ChooseLayoutFontDialog(layoutsViewModel) {
+                    editViewModel.setEditAction(null)
+                }
+            }
             EditAction.CHANGE_FONT_SIZE -> {}
             EditAction.CHANGE_SHADOW -> {
                 ChangeShadowDialog(layoutsViewModel) {
