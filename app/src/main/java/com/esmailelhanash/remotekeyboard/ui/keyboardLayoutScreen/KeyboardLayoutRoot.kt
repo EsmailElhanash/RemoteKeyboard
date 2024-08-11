@@ -324,7 +324,7 @@ private fun handleDragToResize(
     dragStartCorner: DragStartCorner,
     updateButton:  (KeyboardButton) -> Unit
 ) {
-    val myDragAmount = dragAmount.div(5.0F) // Adjust the drag sensitivity if needed
+    val myDragAmount = dragAmount.div(3.0F) // Adjust the drag sensitivity if needed
     Log.d("dragStartCorner", dragStartCorner.toString())
     when (dragStartCorner) {
         DragStartCorner.TOP_LEFT -> {
