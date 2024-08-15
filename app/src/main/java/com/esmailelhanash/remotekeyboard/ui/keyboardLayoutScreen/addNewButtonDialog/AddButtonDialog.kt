@@ -47,8 +47,8 @@ import kotlin.random.Random
 fun AddNewButtonDialog(layoutsViewModel: LayoutsViewModel, dismiss: () -> Unit) {
     val addButtonViewModel: AddButtonViewModel = viewModel()
 
-    // todo remove this
-    fillForm(addButtonViewModel)
+    // auto fill for test
+    // fillForm(addButtonViewModel)
 
     DialogRoot{
         Column(

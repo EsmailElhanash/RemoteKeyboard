@@ -1,5 +1,6 @@
 package com.esmailelhanash.remotekeyboard.ui.allLayoutsScreen
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -9,6 +10,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -16,8 +18,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.esmailelhanash.remotekeyboard.R
 import com.esmailelhanash.remotekeyboard.data.model.KeyboardLayout
 import com.esmailelhanash.remotekeyboard.ui.LayoutsViewModel
 
@@ -56,6 +61,24 @@ fun AllLayoutsRoot(navController: NavHostController,viewModel: LayoutsViewModel)
         topBar = {
             TopAppBar(
                 title = { Text("Keyboard Layouts") },
+                colors = TopAppBarColors(
+                    containerColor = Color(0xff5c4743),
+                    titleContentColor = Color(0xffd3c7b9),
+                    actionIconContentColor = Color.White,
+                    scrolledContainerColor = Color.White,
+                    navigationIconContentColor = Color.White,
+                ),
+
+                actions = {
+                    // Add your actions here
+                    // display a small icon from drawables
+
+                    Image(
+                        painter = painterResource(R.drawable.vb),
+                        contentDescription = null
+                    )
+                }
+
             )
         },
         content = { innerPadding ->
