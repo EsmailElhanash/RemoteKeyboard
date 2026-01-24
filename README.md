@@ -1,6 +1,12 @@
 # RemoteKeyboard
 
-This repository contains the RemoteKeyboard project.
+Android app for remote keyboard control, built with Kotlin.
 
-## Notes
-- Add setup and usage details here.
+## Requirements
+- Android Studio
+- JDK 11+
+
+## Run (Debug)
+1. Open the project in Android Studio.
+2. Let Gradle sync.
+3. Run on a device or emulator.
